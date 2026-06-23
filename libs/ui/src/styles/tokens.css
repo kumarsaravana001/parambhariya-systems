@@ -1,0 +1,207 @@
+/* Parambhariya Design System — tokens
+   ──────────────────────────────────────────────
+   Single source of truth for the entire system.
+   New tokens MUST land here before any inline literals.
+
+   PACKAGE 1 — Foundation tokens (May 2026)
+   ──────────────────────────────────────────────
+   1.1 Type scale tokenized (--text-*, --lh-*, --tracking-*)
+   1.2 Z-index scale tokenized (--z-*)
+   1.3 Breakpoint scale tokenized (--bp-*)
+   1.4 Motion polish (--t-slow, --ease-out, --ease-in, --ease-in-out)
+   1.6 Lifecycle filled-state contrast (--life-{stage}-on-fill)
+   1.7 Touch-target gate (var --touch-min)
+   1.8 Dark mode token block
+*/
+
+:root {
+  /* ── Brand ───────────────────────────────────────────── */
+  --brand-50:  #eef7ec;
+  --brand-100: #d4ecce;
+  --brand-300: #8dcc7e;
+  --brand-500: #4baf3b;   /* primary */
+  --brand-600: #3d9530;
+  --brand-700: #2f7724;
+  --brand-900: #1c4416;
+
+  /* ── Surfaces ────────────────────────────────────────── */
+  --surface-bg:      #f7f8f6;
+  --surface-card:    #ffffff;
+  --surface-muted:   #f1f3ef;
+  --surface-sunken:  #ebedea;
+  --surface-overlay: rgba(15, 23, 18, 0.5);
+
+  /* ── Text ────────────────────────────────────────────── */
+  --text-primary:   #14201a;
+  --text-secondary: #4a5950;
+  --text-muted:     #5e6a62;   /* darkened from #7a877e to pass AA on white at 14px+ */
+  --text-inverse:   #ffffff;
+
+  /* ── Borders ─────────────────────────────────────────── */
+  --border-default: #e3e6e1;
+  --border-strong:  #cdd3cb;
+  --border-focus:   var(--brand-500);
+
+  /* ── Lifecycle palette ───────────────────────────────── */
+  /* Each (-bg, -fg) pair WCAG AA verified at 11px+ (see 01-design-tokens.md table).
+     -on-fill is the inverse text color used when fill ≥ 50% covers the label. */
+  --life-created-bg:    #eef0f3;  --life-created-fg:    #475569;  --life-created-on-fill:    #ffffff;
+  --life-colonizing-bg: #ccfbf1;  --life-colonizing-fg: #0f766e;  --life-colonizing-on-fill: #ffffff;
+  --life-pinning-bg:    #fef3c7;  --life-pinning-fg:    #a06a00;  --life-pinning-on-fill:    #1a0f00;
+  --life-fruiting-bg:   #e8f5e3;  --life-fruiting-fg:   #2f7724;  --life-fruiting-on-fill:   #ffffff;
+  --life-harvested-bg:  #c8dfbc;  --life-harvested-fg:  #1c4416;  --life-harvested-on-fill:  #ffffff;
+  --life-contam-bg:     #fbdcd6;  --life-contam-fg:     #b32a1a;  --life-contam-on-fill:     #ffffff;
+
+  /* ── Status / semantic ───────────────────────────────── */
+  --success-bg: #d8eed3;  --success-fg: #2f7724;
+  --warn-bg:    #fcf3cd;  --warn-fg:    #7a5a00;   /* darkened from #8a6700 to clear AA at 11px */
+  --danger-bg:  #fbdcd6;  --danger-fg:  #b32a1a;
+  --info-bg:    #e2ecf8;  --info-fg:    #2461b8;
+  --neutral-bg: #ecedeb;  --neutral-fg: #5c655e;
+
+  /* ── Typography families ─────────────────────────────── */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* ── Type scale (1.1) ────────────────────────────────── */
+  --text-xs:   11px;  /* eyebrow, kbd, badge */
+  --text-sm:   13px;  /* secondary copy, button sm */
+  --text-base: 14px;  /* body, button md, table cell */
+  --text-md:   15px;  /* list-row heading */
+  --text-lg:   18px;  /* card H2, dialog title */
+  --text-xl:   24px;  /* page H1 */
+  --text-2xl:  30px;  /* welcome hero */
+
+  --lh-tight: 1.2;   /* @kind font */
+  --lh-snug:  1.35;  /* @kind font */
+  --lh-base:  1.5;   /* @kind font */
+
+  --tracking-tight:   -0.01em;   /* @kind font */
+  --tracking-tighter: -0.015em;  /* @kind font */
+  --tracking-eyebrow:  0.06em;   /* @kind font */
+
+  /* ── Spacing — 8px grid ──────────────────────────────── */
+  --s-0:  0;     /* @kind spacing */
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-6:  24px;
+  --s-8:  32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-20: 80px;
+
+  /* ── Radii ───────────────────────────────────────────── */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   18px;
+  --radius-full: 9999px;
+
+  /* ── Elevation ───────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgba(20, 32, 26, 0.04);
+  --shadow-sm: 0 2px 4px rgba(20, 32, 26, 0.06), 0 1px 2px rgba(20, 32, 26, 0.04);
+  --shadow-md: 0 8px 16px -4px rgba(20, 32, 26, 0.08), 0 2px 4px rgba(20, 32, 26, 0.05);
+  --shadow-lg: 0 20px 40px -8px rgba(20, 32, 26, 0.12);
+
+  /* ── Z-index (1.2) ───────────────────────────────────── */
+  --z-base:     0;   /* @kind other */
+  --z-nav:      10;  /* @kind other */
+  --z-dropdown: 20;  /* @kind other */
+  --z-overlay:  40;  /* @kind other */
+  --z-modal:    50;  /* @kind other */
+  --z-toast:    60;  /* @kind other */
+
+  /* ── Breakpoints (1.3) ───────────────────────────────── */
+  /* Tokens only — use in @media via custom-media or duplicate in queries.
+     Two designed widths: 390 (mobile) and 1440 (desktop). Tablet reflows fluidly. */
+  --bp-sm:  640px;   /* @kind other */
+  --bp-md:  768px;   /* @kind other */
+  --bp-lg:  1024px;  /* @kind other */
+  --bp-xl:  1280px;  /* @kind other */
+  --bp-2xl: 1536px;  /* @kind other */
+
+  /* ── Motion (1.4) ────────────────────────────────────── */
+  --t-fast:  120ms;   /* @kind other */
+  --t-base:  180ms;   /* @kind other */
+  --t-slow:  300ms;   /* @kind other */
+
+  --ease:        cubic-bezier(0.4, 0, 0.2, 1);   /* @kind other */
+  --ease-out:    cubic-bezier(0, 0, 0.2, 1);     /* @kind other */
+  --ease-in:     cubic-bezier(0.4, 0, 1, 1);     /* @kind other */
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);   /* @kind other */
+
+  /* ── Touch (1.7) ─────────────────────────────────────── */
+  --touch-min: 44px;  /* @kind spacing */
+}
+
+/* ── Dark mode (1.8) ─────────────────────────────────────
+   Activated by [data-theme="dark"] on root. Tokens lighten -bg
+   and keep or slightly lighten -fg. Brand is unchanged across
+   modes; the lifecycle palette gets a darker -bg + lighter -fg
+   to maintain readable contrast on dark surfaces. */
+[data-theme="dark"] {
+  --surface-bg:      #0f1411;
+  --surface-card:    #1a211d;
+  --surface-muted:   #232b27;
+  --surface-sunken:  #2c352f;
+  --surface-overlay: rgba(0, 0, 0, 0.7);
+
+  --text-primary:   #e8ebe9;
+  --text-secondary: #a3afa8;
+  --text-muted:     #7a857e;
+  --text-inverse:   #14201a;
+
+  --border-default: #2a322d;
+  --border-strong:  #3a443e;
+
+  /* Lifecycle in dark: -bg dims to a saturated dark wash; -fg lightens to
+     keep the AA ratio with the new background. -on-fill stays the same
+     because the fill color itself (the -fg in light mode) hasn't moved. */
+  --life-created-bg:    #2a3038;  --life-created-fg:    #b1c0d2;
+  --life-colonizing-bg: #103833;  --life-colonizing-fg: #6fe3cf;
+  --life-pinning-bg:    #2e2308;  --life-pinning-fg:    #f0b94a;
+  --life-fruiting-bg:   #1d2e1a;  --life-fruiting-fg:   #7fcc6d;
+  --life-harvested-bg:  #18241a;  --life-harvested-fg:  #a5d39a;
+  --life-contam-bg:     #2e1612;  --life-contam-fg:     #f49081;
+
+  --success-bg: #1d2e1a;  --success-fg: #8fd685;
+  --warn-bg:    #2e2308;  --warn-fg:    #f0c25a;
+  --danger-bg:  #2e1612;  --danger-fg:  #f49081;
+  --info-bg:    #122236;  --info-fg:    #88b7f3;
+  --neutral-bg: #232b27;  --neutral-fg: #a3afa8;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 16px -4px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 20px 40px -8px rgba(0, 0, 0, 0.6);
+}
+
+/* Reduced motion — kill anything > 0.01ms */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  background: var(--surface-bg);
+}
+button { font-family: inherit; }
+
+/* Touch-target enforcement (1.7): on devices without precise pointer,
+   any button below --touch-min gets coerced up. xs/sm sizes are still
+   declared (for desktop dense UI) but cannot ship below 44px on touch. */
+@media not all and (hover: hover) and (pointer: fine) {
+  .btn--xs, .btn--sm { min-height: var(--touch-min); }
+}

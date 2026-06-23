@@ -1,0 +1,150 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
+@import "./tokens.css";
+
+/* Tailwind 4 auto-detects sources next to the entry CSS, but does NOT cross
+   workspace package boundaries. Tell it to scan libs/ui sources explicitly. */
+@source "../**/*.{ts,tsx}";
+@source "../../../../apps/web/src/**/*.{ts,tsx}";
+
+/* Tailwind 4 theme — values are LITERAL (not var()) to avoid name collisions
+   with tokens.css. Brand/surface colors point at runtime-mutable --brand-*
+   vars so applyTenantTheme() can swap them live; everything else is fixed. */
+@theme {
+  /* Brand (runtime-mutable via applyTenantTheme) */
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-300: var(--brand-300);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-900: var(--brand-900);
+
+  /* Surfaces (light/dark via [data-theme]) */
+  --color-surface-bg: var(--surface-bg);
+  --color-surface-card: var(--surface-card);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-sunken: var(--surface-sunken);
+
+  /* Text */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-inverse: var(--text-inverse);
+
+  /* Borders */
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+  --color-border-focus: var(--border-focus);
+
+  /* Lifecycle */
+  --color-life-created-bg: var(--life-created-bg);
+  --color-life-created-fg: var(--life-created-fg);
+  --color-life-colonizing-bg: var(--life-colonizing-bg);
+  --color-life-colonizing-fg: var(--life-colonizing-fg);
+  --color-life-pinning-bg: var(--life-pinning-bg);
+  --color-life-pinning-fg: var(--life-pinning-fg);
+  --color-life-fruiting-bg: var(--life-fruiting-bg);
+  --color-life-fruiting-fg: var(--life-fruiting-fg);
+  --color-life-harvested-bg: var(--life-harvested-bg);
+  --color-life-harvested-fg: var(--life-harvested-fg);
+  --color-life-contam-bg: var(--life-contam-bg);
+  --color-life-contam-fg: var(--life-contam-fg);
+
+  /* Status */
+  --color-success-bg: var(--success-bg);
+  --color-success-fg: var(--success-fg);
+  --color-warn-bg: var(--warn-bg);
+  --color-warn-fg: var(--warn-fg);
+  --color-danger-bg: var(--danger-bg);
+  --color-danger-fg: var(--danger-fg);
+  --color-info-bg: var(--info-bg);
+  --color-info-fg: var(--info-fg);
+  --color-neutral-bg: var(--neutral-bg);
+  --color-neutral-fg: var(--neutral-fg);
+
+  /* Type — LITERAL to avoid self-reference */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 15px;
+  --text-lg: 18px;
+  --text-xl: 24px;
+  --text-2xl: 30px;
+
+  /* Spacing — 8px grid with deliberate gaps (no 5/7/9/11) */
+  --spacing-0: 0;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(20, 32, 26, 0.04);
+  --shadow-sm: 0 2px 4px rgba(20, 32, 26, 0.06), 0 1px 2px rgba(20, 32, 26, 0.04);
+  --shadow-md: 0 8px 16px -4px rgba(20, 32, 26, 0.08), 0 2px 4px rgba(20, 32, 26, 0.05);
+  --shadow-lg: 0 20px 40px -8px rgba(20, 32, 26, 0.12);
+
+  /* Tracking + line-height (expose to Tailwind utilities) */
+  --tracking-tighter: -0.015em;
+  --tracking-tight: -0.01em;
+  --tracking-eyebrow: 0.06em;
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-base: 1.5;
+
+  /* Motion */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --animate-dialog-in: dialog-in 200ms cubic-bezier(0, 0, 0.2, 1) both;
+  --animate-dialog-out: dialog-out 150ms cubic-bezier(0.4, 0, 1, 1) both;
+  --animate-overlay-in: overlay-in 200ms cubic-bezier(0, 0, 0.2, 1) both;
+  --animate-overlay-out: overlay-out 150ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@keyframes dialog-in {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(.95); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes dialog-out {
+  from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  to   { opacity: 0; transform: translate(-50%, -50%) scale(.95); }
+}
+@keyframes overlay-in  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes overlay-out { from { opacity: 1 } to { opacity: 0 } }
+
+@layer base {
+  :root {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+  }
+  html, body { background: var(--surface-bg); color: var(--text-primary); }
+  .font-mono, code, kbd, samp { font-family: var(--font-mono); }
+
+  /* Focus is keyboard-only */
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+}

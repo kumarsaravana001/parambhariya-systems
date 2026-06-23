@@ -7,7 +7,7 @@ import {
 import {
   SPAWN_STAGE_ORDER, SPAWN_STAGE_LABEL, SPAWN_STAGE_BASE_DAYS, type SpawnStage, type SpawnBatch,
 } from "@parambhariya/types";
-import { FlaskConical, Plus, Pencil, Trash2, GitBranch, Clock, CheckCircle2, Thermometer } from "lucide-react";
+import { FlaskConical, Plus, Pencil, Trash2, GitBranch, Clock, CheckCircle2, Thermometer, AlertTriangle } from "lucide-react";
 import { useSpawn, useStrains, useZones, useCreate, useUpdate, useRemove } from "../lib/queries";
 import { EntityForm, type FieldSpec } from "../lib/EntityForm";
 import { SectionHelp } from "../lib/SectionHelp";
@@ -144,6 +144,7 @@ function Spawn() {
                         <div className="text-xs text-text-muted flex items-center gap-2 flex-wrap">
                           <span>{strain?.name}</span>
                           {b.parentId && <Tag tone="neutral" size="sm"><GitBranch className="h-3 w-3" /> from {labelOf(b.parentId)}</Tag>}
+                          {b.atRisk && b.status !== "CONTAMINATED" && <Tag tone="warn" size="sm"><AlertTriangle className="h-3 w-3" /> at risk</Tag>}
                           {b.quantity > 0 && <span className="font-mono">{b.quantity} {b.container || "units"}</span>}
                         </div>
                         {f && b.status !== "CONTAMINATED" && (

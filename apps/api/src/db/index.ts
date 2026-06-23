@@ -63,7 +63,8 @@ function ensureSchema(sqlite: Database.Database) {
       stage TEXT NOT NULL, parent_id TEXT, substrate TEXT NOT NULL DEFAULT '', container TEXT NOT NULL DEFAULT '',
       quantity INTEGER NOT NULL DEFAULT 0, zone_id TEXT, inoculated_on TEXT NOT NULL DEFAULT '',
       expected_colonization_days INTEGER NOT NULL DEFAULT 12, status TEXT NOT NULL DEFAULT 'INOCULATED',
-      buyer TEXT NOT NULL DEFAULT '', notes TEXT NOT NULL DEFAULT '', created_at TEXT NOT NULL
+      buyer TEXT NOT NULL DEFAULT '', contamination_cause TEXT NOT NULL DEFAULT '', at_risk INTEGER NOT NULL DEFAULT 0,
+      notes TEXT NOT NULL DEFAULT '', created_at TEXT NOT NULL
     );
     CREATE TABLE IF NOT EXISTS readings (
       id TEXT PRIMARY KEY, zone_id TEXT NOT NULL, ts TEXT NOT NULL,
@@ -126,7 +127,10 @@ function migrate(sqlite: Database.Database) {
     ["bags", "inoculated_on", "TEXT NOT NULL DEFAULT ''"],
     ["bags", "expected_harvest", "TEXT NOT NULL DEFAULT ''"],
     ["bags", "flush_count", "INTEGER NOT NULL DEFAULT 0"],
+    ["bags", "contamination_cause", "TEXT NOT NULL DEFAULT ''"],
     ["bags", "notes", "TEXT NOT NULL DEFAULT ''"],
+    ["spawn_batches", "contamination_cause", "TEXT NOT NULL DEFAULT ''"],
+    ["spawn_batches", "at_risk", "INTEGER NOT NULL DEFAULT 0"],
   ];
   for (const [table, col, def] of additions) {
     const cols = sqlite.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];

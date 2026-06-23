@@ -13,7 +13,7 @@ import { seedData } from "./seed-data";
  * driver is the real path; this is the offline twin.
  */
 
-const KEY = "parambhariya.db.v4"; // bump on schema change → reseeds with new fields
+const KEY = "parambhariya.db.v5"; // bump on schema change → reseeds with new fields
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const nowISO = () => new Date().toISOString();
 
@@ -186,8 +186,8 @@ function defaultsFor(r: Resource): Record<string, any> {
     case "farms": return { location: "", areaSqM: 0, bagCapacity: 0, manager: "", phone: "", establishedOn: "" };
     case "rooms": return { sizeSqM: 0, bagCapacity: 0, rackCount: 0, notes: "" };
     case "zones": return { bagCapacity: 0, deviceId: "", setpointTempC: 24, setpointRhPct: 88, setpointCo2Ppm: 1000 };
-    case "bags": return { stageProgress: 0, weightG: null, substrate: "", substrateWeightKg: 0, inoculatedOn: "", expectedHarvest: "", flushCount: 0, notes: "" };
-    case "spawn": return { label: "", parentId: null, substrate: "", container: "", quantity: 0, zoneId: null, status: "INOCULATED", buyer: "", notes: "", expectedColonizationDays: 12 };
+    case "bags": return { stageProgress: 0, weightG: null, substrate: "", substrateWeightKg: 0, inoculatedOn: "", expectedHarvest: "", flushCount: 0, contaminationCause: "", notes: "" };
+    case "spawn": return { label: "", parentId: null, substrate: "", container: "", quantity: 0, zoneId: null, status: "INOCULATED", buyer: "", contaminationCause: "", atRisk: false, notes: "", expectedColonizationDays: 12 };
     case "cultures": return { contaminated: false, gen: 1, stock: 0, storageId: null, categoryId: null, intervalDays: 15, nextTransfer: null, commonName: "", strainCode: "" };
     case "storage": return { parentId: null, tempRange: "" };
     case "categories": return { parentId: null };

@@ -91,12 +91,12 @@ export function createApp(db: Db) {
   crud(app, "/bags", schema.bags, T.BagCreate, db, {
     name: "Bags",
     label: (r) => r.code,
-    onCreate: (d) => ({ stageProgress: 0, weightG: null, ...d, createdAt: new Date().toISOString() }),
+    onCreate: (d) => ({ stageProgress: 0, weightG: null, contaminationCause: "", ...d, createdAt: new Date().toISOString() }),
   });
   crud(app, "/spawn", schema.spawnBatches, T.SpawnBatchCreate, db, {
     name: "Spawn",
     label: (r) => r.code,
-    onCreate: (d) => ({ label: "", parentId: null, substrate: "", container: "", quantity: 0, zoneId: null, status: "INOCULATED", buyer: "", notes: "", ...d, createdAt: new Date().toISOString() }),
+    onCreate: (d) => ({ label: "", parentId: null, substrate: "", container: "", quantity: 0, zoneId: null, status: "INOCULATED", buyer: "", contaminationCause: "", atRisk: false, notes: "", ...d, createdAt: new Date().toISOString() }),
   });
 
   // zone setpoint (the temperature-control write path)

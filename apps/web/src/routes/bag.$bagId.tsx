@@ -6,6 +6,7 @@ import {
 } from "@parambhariya/ui";
 import { Pencil, Trash2 } from "lucide-react";
 import type { Bag, LifecycleStage } from "@parambhariya/types";
+import { biologicalEfficiency, beRating } from "@parambhariya/types";
 import { useBag, useZones, useRooms, useFarm, useStrains, useUpdate, useRemove } from "../lib/queries";
 import { EntityForm } from "../lib/EntityForm";
 import { useNavigate } from "@tanstack/react-router";
@@ -32,6 +33,9 @@ function BagDetail() {
   const b = bag.data;
   const strain = (strains.data ?? []).find((s) => s.id === b.strainId);
   const isTerminal = b.status === "CONTAMINATED" || b.status === "DISPOSED";
+  const be = biologicalEfficiency(b.weightG, b.substrateWeightKg);
+  const beR = be != null ? beRating(be) : null;
+  const toneClass = { success: "text-success-fg", warn: "text-warn-fg", danger: "text-danger-fg", neutral: "text-text-secondary" } as const;
 
   return (
     <div>
@@ -88,14 +92,18 @@ function BagDetail() {
             { label: "Expected harvest", value: b.expectedHarvest || "—", mono: true },
             { label: "Harvest weight", value: b.weightG ? `${b.weightG} g` : "—", mono: true },
             { label: "Flushes", value: String(b.flushCount ?? 0), mono: true },
+            { label: "BE %", value: be != null ? <span className={`font-mono font-semibold ${toneClass[beR!.tone]}`}>{be} % · {beR!.label}</span> : "—" },
           ]} />
+          {b.contaminationCause && (
+            <p className="text-sm text-danger-fg mt-4 pt-4 border-t border-border-default">Contamination: {b.contaminationCause}</p>
+          )}
           {b.notes && <p className="text-sm text-text-muted mt-4 pt-4 border-t border-border-default">{b.notes}</p>}
         </Card>
       </div>
 
       <EntityForm
         open={editOpen} onOpenChange={setEditOpen} title={`Edit ${b.code}`} submitLabel="Save changes" busy={update.isPending}
-        initial={{ status: b.status, stageProgress: b.stageProgress, weightG: b.weightG ?? "", zoneId: b.zoneId, substrate: b.substrate, substrateWeightKg: b.substrateWeightKg, inoculatedOn: b.inoculatedOn, expectedHarvest: b.expectedHarvest, flushCount: b.flushCount, notes: b.notes }}
+        initial={{ status: b.status, stageProgress: b.stageProgress, weightG: b.weightG ?? "", zoneId: b.zoneId, substrate: b.substrate, substrateWeightKg: b.substrateWeightKg, inoculatedOn: b.inoculatedOn, expectedHarvest: b.expectedHarvest, flushCount: b.flushCount, contaminationCause: b.contaminationCause, notes: b.notes }}
         fields={[
           { name: "status", label: "Stage", type: "select", required: true, options: ["CREATED", "COLONIZING", "PINNING", "FRUITING", "HARVESTED", "CONTAMINATED", "DISPOSED"].map((v) => ({ value: v, label: v })) },
           { name: "stageProgress", label: "Stage progress (0–1)", type: "number", step: 0.05, min: 0, max: 1 },
@@ -104,8 +112,9 @@ function BagDetail() {
           { name: "substrateWeightKg", label: "Substrate weight (kg)", type: "number", step: 0.1 },
           { name: "inoculatedOn", label: "Inoculated on", type: "date" },
           { name: "expectedHarvest", label: "Expected harvest", type: "date" },
-          { name: "weightG", label: "Harvest weight (g)", type: "number" },
+          { name: "weightG", label: "Harvest weight (g)", type: "number", hint: "Drives BE % = weight ÷ dry substrate" },
           { name: "flushCount", label: "Flushes harvested", type: "number" },
+          { name: "contaminationCause", label: "Contamination cause (if any)", placeholder: "Trichoderma green mold…" },
           { name: "notes", label: "Notes", type: "textarea" },
         ]}
         onSubmit={async (v) => { await update.mutateAsync({ id: b.id, body: v }); setEditOpen(false); }}

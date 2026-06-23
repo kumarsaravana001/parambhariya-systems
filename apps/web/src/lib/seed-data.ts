@@ -38,7 +38,7 @@ export function seedData() {
     { code: "AN-0301", strainId: "s-hericium", zoneId: "z-a3-p1", status: "CREATED", stageProgress: 0.1, weightG: null, age: 1, substrate: "Supplemented sawdust", substrateWeightKg: 1.4, flushCount: 0 },
     { code: "AN-0210", strainId: "s-lentinula", zoneId: "z-a1-c1", status: "CONTAMINATED", stageProgress: 0, weightG: null, age: 11, substrate: "Hardwood sawdust", substrateWeightKg: 2.5, flushCount: 0 },
     { code: "PO-0501", strainId: "s-pleurotus", zoneId: "z-p2-f1", status: "FRUITING", stageProgress: 0.45, weightG: null, age: 20, substrate: "Paddy straw", substrateWeightKg: 1.0, flushCount: 1 },
-  ].map((b) => ({ id: uid(), code: b.code, strainId: b.strainId, zoneId: b.zoneId, status: b.status, stageProgress: b.stageProgress, weightG: b.weightG, substrate: b.substrate, substrateWeightKg: b.substrateWeightKg, inoculatedOn: iso(b.age).slice(0, 10), expectedHarvest: "", flushCount: b.flushCount, notes: "", createdAt: iso(b.age) }));
+  ].map((b) => ({ id: uid(), code: b.code, strainId: b.strainId, zoneId: b.zoneId, status: b.status, stageProgress: b.stageProgress, weightG: b.weightG, substrate: b.substrate, substrateWeightKg: b.substrateWeightKg, inoculatedOn: iso(b.age).slice(0, 10), expectedHarvest: "", flushCount: b.flushCount, contaminationCause: b.status === "CONTAMINATED" ? "Trichoderma green mold" : "", notes: "", createdAt: iso(b.age) }));
 
   const categories = [
     { id: "c1", parentId: null, name: "Fungi" },
@@ -70,7 +70,7 @@ export function seedData() {
     { id: g1Id, code: "G1-OYS-014", label: "Culture B", strainId: "s-pleurotus", stage: "GRAIN_G1", parentId: mcId, substrate: "Sorghum grain", container: "1 L jar", quantity: 10, zoneId: "z-a1-c1", age: 4, expectedColonizationDays: 12, status: "COLONIZING", buyer: "", notes: "", createdAt: iso(4) },
     { id: f1Id, code: "F1-OYS-031", label: "Culture A·A", strainId: "s-pleurotus", stage: "SUBSTRATE_F1", parentId: g1Id, substrate: "Supplemented sawdust", container: "Spawn bag", quantity: 40, zoneId: "z-a2-f1", age: 2, expectedColonizationDays: 16, status: "COLONIZING", buyer: "FarmFresh Coimbatore", notes: "", createdAt: iso(2) },
     { id: uid(), code: "SM-SHI-002", label: "Shiitake master", strainId: "s-lentinula", stage: "SPAWN_MASTER", parentId: null, substrate: "Hardwood sawdust", container: "Spawn bag", quantity: 25, zoneId: "z-p1-c1", age: 20, expectedColonizationDays: 45, status: "COLONIZING", buyer: "", notes: "", createdAt: iso(20) },
-  ].map((s) => ({ ...s, inoculatedOn: iso(s.age).slice(0, 10) }));
+  ].map((s) => ({ ...s, inoculatedOn: iso(s.age).slice(0, 10), contaminationCause: "", atRisk: false }));
 
   return {
     strains, farms, rooms, zones, bags, spawn,

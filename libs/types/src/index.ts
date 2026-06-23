@@ -119,6 +119,7 @@ export const Bag = z.object({
   inoculatedOn: dateStr,
   expectedHarvest: dateStr,
   flushCount: count,                             // harvest flushes taken
+  contaminationCause: shortText.default(""),     // Trichoderma / bacterial blotch / cobweb …
   notes,
   createdAt: ISO,
 });
@@ -284,11 +285,13 @@ export const SpawnBatch = z.object({
   expectedColonizationDays: z.number().int().positive().default(12), // base, at optimum
   status: SpawnStatus.default("INOCULATED"),
   buyer: shortText.default(""),            // who ordered (optional)
+  contaminationCause: shortText.default(""),
+  atRisk: z.boolean().default(false),      // a parent in the lineage was contaminated
   notes,
   createdAt: ISO,
 });
 export const SpawnBatchCreate = SpawnBatch.omit({ id: true, createdAt: true })
-  .partial({ label: true, parentId: true, substrate: true, container: true, quantity: true, zoneId: true, status: true, buyer: true, notes: true });
+  .partial({ label: true, parentId: true, substrate: true, container: true, quantity: true, zoneId: true, status: true, buyer: true, contaminationCause: true, atRisk: true, notes: true });
 export type SpawnBatch = z.infer<typeof SpawnBatch>;
 export type SpawnBatchCreate = z.infer<typeof SpawnBatchCreate>;
 
@@ -296,3 +299,4 @@ export type SpawnBatchCreate = z.infer<typeof SpawnBatchCreate>;
 export const LIFECYCLE_ORDER: LifecycleStage[] = ["CREATED", "COLONIZING", "PINNING", "FRUITING", "HARVESTED"];
 
 export * from "./colonization";
+export * from "./protection";

@@ -69,6 +69,7 @@ export const bags = sqliteTable("bags", {
   inoculatedOn: text("inoculated_on").notNull().default(""),
   expectedHarvest: text("expected_harvest").notNull().default(""),
   flushCount: integer("flush_count").notNull().default(0),
+  contaminationCause: text("contamination_cause").notNull().default(""),
   notes: text("notes").notNull().default(""),
   createdAt: text("created_at").notNull(),
 });
@@ -88,6 +89,8 @@ export const spawnBatches = sqliteTable("spawn_batches", {
   expectedColonizationDays: integer("expected_colonization_days").notNull().default(12),
   status: text("status").notNull().default("INOCULATED"),
   buyer: text("buyer").notNull().default(""),
+  contaminationCause: text("contamination_cause").notNull().default(""),
+  atRisk: integer("at_risk", { mode: "boolean" }).notNull().default(false),
   notes: text("notes").notNull().default(""),
   createdAt: text("created_at").notNull(),
 });

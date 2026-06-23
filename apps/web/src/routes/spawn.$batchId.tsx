@@ -2,14 +2,21 @@ import * as React from "react";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import {
   PageHeader, Breadcrumb, Card, CardTitle, DataList, Badge, Tag, Button, Progress,
-  DetailSkeleton, ErrorState, AlertBanner,
+  DetailSkeleton, ErrorState, AlertBanner, Checkbox, Label,
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose,
+  Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
 } from "@parambhariya/ui";
 import {
-  SPAWN_STAGE_LABEL, type SpawnBatch,
+  SPAWN_STAGE_LABEL, descendantsOf, type SpawnBatch,
 } from "@parambhariya/types";
-import { Pencil, Trash2, GitBranch, ChevronRight, Thermometer, CalendarClock, Plus } from "lucide-react";
+import { Trash2, GitBranch, ChevronRight, Thermometer, CalendarClock, AlertOctagon } from "lucide-react";
 import { useSpawn, useStrains, useZones, useUpdate, useRemove } from "../lib/queries";
 import { batchForecast, bandTone, statusTone } from "../lib/spawn";
+
+const CONTAMINANTS = [
+  "Trichoderma green mold", "Bacterial blotch (Pseudomonas)", "Cobweb (Dactylium)",
+  "Black pin mold (Rhizopus/Aspergillus)", "Penicillium (blue-green)", "Wet spot (Bacillus)", "Other / unknown",
+];
 
 function SpawnDetail() {
   const { batchId } = Route.useParams();
@@ -19,6 +26,9 @@ function SpawnDetail() {
   const zones = useZones();
   const update = useUpdate<SpawnBatch>("spawn");
   const remove = useRemove("spawn");
+  const [contamOpen, setContamOpen] = React.useState(false);
+  const [cause, setCause] = React.useState(CONTAMINANTS[0]);
+  const [quarantine, setQuarantine] = React.useState(true);
 
   if (spawn.isLoading || strains.isLoading) return <DetailSkeleton />;
   if (spawn.error) return <ErrorState title="Failed to load batch" onRetry={() => spawn.refetch()} />;
@@ -31,14 +41,26 @@ function SpawnDetail() {
   const zone = (zones.data ?? []).find((z) => z.id === b.zoneId);
   const f = batchForecast(b, strain, zone ?? undefined);
 
-  // lineage: walk up parents, find direct children
+  // lineage: walk up parents, find direct children + all descendants
   const ancestry: SpawnBatch[] = [];
   let cur: SpawnBatch | undefined = b.parentId ? list.find((x) => x.id === b.parentId) : undefined;
   let guard = 0;
   while (cur && guard++ < 20) { ancestry.unshift(cur); cur = cur.parentId ? list.find((x) => x.id === cur!.parentId) : undefined; }
   const children = list.filter((x) => x.parentId === b.id);
+  const descendants = descendantsOf(list, b.id);
 
   const markReady = () => update.mutate({ id: b.id, body: { status: "READY" } });
+
+  const confirmContaminated = async () => {
+    await update.mutateAsync({ id: b.id, body: { status: "CONTAMINATED", contaminationCause: cause } });
+    if (quarantine) {
+      // flag every batch transferred down from this one as at-risk
+      for (const d of descendants) {
+        if (d.status !== "CONTAMINATED") await update.mutateAsync({ id: d.id, body: { atRisk: true } });
+      }
+    }
+    setContamOpen(false);
+  };
 
   return (
     <div>
@@ -49,13 +71,25 @@ function SpawnDetail() {
         actions={
           <>
             <Badge tone={statusTone(b.status)}>{b.status}</Badge>
+            {b.status !== "CONTAMINATED" && (
+              <Button variant="secondary" size="sm" className="text-danger-fg" onClick={() => setContamOpen(true)}><AlertOctagon className="h-4 w-4" /> Mark contaminated</Button>
+            )}
             <Button variant="ghost" size="sm" className="text-danger-fg" onClick={async () => { await remove.mutateAsync(b.id); navigate({ to: "/spawn" }); }}><Trash2 className="h-4 w-4" /> Delete</Button>
           </>
         }
       />
 
+      {b.atRisk && b.status !== "CONTAMINATED" && (
+        <AlertBanner tone="warning" title="At risk — a parent in this lineage was contaminated" className="mb-4"
+          actions={<Button variant="secondary" size="sm" onClick={() => update.mutate({ id: b.id, body: { atRisk: false } })}>Clear flag (inspected, clean)</Button>}>
+          Inspect before transferring or selling. If clean, clear the flag; if affected, mark it contaminated too.
+        </AlertBanner>
+      )}
+
       {b.status === "CONTAMINATED" ? (
-        <AlertBanner tone="critical" title="Batch contaminated" className="mb-6">Remove from the spawn chain — do not transfer or sell.</AlertBanner>
+        <AlertBanner tone="critical" title={`Contaminated${b.contaminationCause ? ` — ${b.contaminationCause}` : ""}`} className="mb-6">
+          Remove from the spawn chain — do not transfer or sell. {descendants.length > 0 && `${descendants.length} downstream batch${descendants.length > 1 ? "es were" : " was"} flagged at-risk.`}
+        </AlertBanner>
       ) : f && (
         <Card padding="lg" className="mb-6">
           <div className="flex items-center justify-between mb-4">
@@ -152,6 +186,36 @@ function SpawnDetail() {
           {b.notes && <p className="text-sm text-text-muted mt-4 pt-4 border-t border-border-default">{b.notes}</p>}
         </Card>
       </div>
+
+      <Dialog open={contamOpen} onOpenChange={setContamOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Mark {b.code} contaminated</DialogTitle>
+            <DialogDescription>Record the contaminant so you can track which rooms and substrates leak.</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="contam-cause">Contaminant</Label>
+              <Select value={cause} onValueChange={setCause}>
+                <SelectTrigger id="contam-cause"><SelectValue /></SelectTrigger>
+                <SelectContent>{CONTAMINANTS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            {descendants.length > 0 && (
+              <label className="flex items-start gap-2">
+                <Checkbox checked={quarantine} onCheckedChange={(v) => setQuarantine(!!v)} className="mt-0.5" />
+                <span className="text-sm text-text-secondary">
+                  Quarantine the {descendants.length} downstream batch{descendants.length > 1 ? "es" : ""} transferred from this one (flag at-risk for inspection).
+                </span>
+              </label>
+            )}
+          </div>
+          <DialogFooter>
+            <DialogClose asChild><Button variant="secondary" size="sm">Cancel</Button></DialogClose>
+            <Button variant="danger" size="sm" onClick={confirmContaminated} loading={update.isPending}>Mark contaminated</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

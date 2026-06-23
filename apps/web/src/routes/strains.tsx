@@ -15,8 +15,13 @@ const fields = [
   { name: "optimalTempMax", label: "Temp max (°C)", type: "number" as const, step: 0.5 },
   { name: "optimalRhMin", label: "RH min (%)", type: "number" as const },
   { name: "optimalRhMax", label: "RH max (%)", type: "number" as const },
-  { name: "cycleDays", label: "Cycle (days)", type: "number" as const, required: true },
-  { name: "yieldKg", label: "Yield (kg)", type: "number" as const, step: 0.1 },
+  { name: "optimalCo2Max", label: "CO₂ max (ppm)", type: "number" as const, step: 50 },
+  { name: "colonizationDays", label: "Colonization (days)", type: "number" as const },
+  { name: "fruitingDays", label: "Fruiting (days)", type: "number" as const },
+  { name: "cycleDays", label: "Total cycle (days)", type: "number" as const, required: true },
+  { name: "yieldKg", label: "Yield / cycle (kg)", type: "number" as const, step: 0.1 },
+  { name: "supplier", label: "Spawn supplier", placeholder: "Parambhariya spawn lab" },
+  { name: "notes", label: "Notes", type: "textarea" as const },
 ];
 
 function StrainsScreen() {
@@ -59,7 +64,7 @@ function StrainsScreen() {
       <EntityForm
         open={formOpen} onOpenChange={setFormOpen}
         title={editing ? "Edit strain" : "Add strain"} submitLabel={editing ? "Save changes" : "Add strain"}
-        busy={create.isPending || update.isPending} initial={editing ?? { optimalTempMin: 22, optimalTempMax: 26, optimalRhMin: 85, optimalRhMax: 95, cycleDays: 22, yieldKg: 0 }}
+        busy={create.isPending || update.isPending} initial={editing ?? { optimalTempMin: 22, optimalTempMax: 26, optimalRhMin: 85, optimalRhMax: 95, optimalCo2Max: 1000, colonizationDays: 14, fruitingDays: 8, cycleDays: 22, yieldKg: 0 }}
         fields={fields}
         onSubmit={async (v) => {
           if (editing) await update.mutateAsync({ id: editing.id, body: v });

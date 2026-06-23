@@ -3,10 +3,11 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import {
   PageHeader, Breadcrumb, RoomCard, BagCard, MetricCard, Button, EmptyState,
   Tabs, TabsList, TabsTrigger, TabsContent, DetailSkeleton, ErrorState,
+  Card, CardTitle, DataList, Progress,
 } from "@parambhariya/ui";
-import { Plus, MapPin, Package, DoorOpen, TriangleAlert } from "lucide-react";
+import { Plus, MapPin, Package, DoorOpen, Boxes } from "lucide-react";
 import type { Room, Zone, Bag, Strain } from "@parambhariya/types";
-import { useFarm, useRooms, useZones, useBags, useStrains, useAlerts, useCreate } from "../lib/queries";
+import { useFarm, useRooms, useZones, useBags, useStrains, useCreate } from "../lib/queries";
 import { EntityForm } from "../lib/EntityForm";
 
 function FarmDetail() {
@@ -16,7 +17,6 @@ function FarmDetail() {
   const zones = useZones();
   const bags = useBags();
   const strains = useStrains();
-  const alerts = useAlerts(true);
   const createRoom = useCreate<Room>("rooms");
   const createBag = useCreate<Bag>("bags");
 
@@ -32,7 +32,8 @@ function FarmDetail() {
   const farmRooms = (rooms.data ?? []).filter((r) => r.farmId === f.id);
   const farmZones = (zones.data ?? []).filter((z) => farmRooms.some((r) => r.id === z.roomId));
   const farmBags = (bags.data ?? []).filter((b) => farmZones.some((z) => z.id === b.zoneId));
-  const farmAlerts = (alerts.data ?? []).filter((a) => farmZones.some((z) => z.id === a.zoneId)).length;
+  const activeBags = farmBags.filter((b) => !["HARVESTED", "CONTAMINATED", "DISPOSED"].includes(b.status)).length;
+  const occupancy = activeBags; // bags currently occupying capacity
 
   const zonesOfRoom = (rid: string) => farmZones.filter((z) => z.roomId === rid);
   const roomAvg = (rid: string) => {
@@ -59,12 +60,28 @@ function FarmDetail() {
         }
       />
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <MetricCard label="Rooms" value={farmRooms.length} icon={<DoorOpen />} />
-        <MetricCard label="Active bags" value={farmBags.filter((b) => !["HARVESTED", "CONTAMINATED"].includes(b.status)).length} icon={<Package />} />
-        <MetricCard label="Open alerts" value={farmAlerts} icon={<TriangleAlert />} tone={farmAlerts > 0 ? "warn" : "default"} />
-        <MetricCard label="Location" value={f.location.split(",")[0] || "—"} icon={<MapPin />} />
+        <MetricCard label="Active bags" value={activeBags} icon={<Package />} />
+        <MetricCard label="Capacity used" value={f.bagCapacity ? `${Math.round((occupancy / f.bagCapacity) * 100)}` : "—"} unit={f.bagCapacity ? "%" : ""} icon={<Boxes />} tone={f.bagCapacity && occupancy / f.bagCapacity > 0.9 ? "warn" : "default"} hint={f.bagCapacity ? `${occupancy} / ${f.bagCapacity} bags` : "Set a capacity"} />
+        <MetricCard label="Cultivation area" value={f.areaSqM ? String(f.areaSqM) : "—"} unit={f.areaSqM ? "m²" : ""} icon={<MapPin />} />
       </div>
+
+      <Card padding="lg" className="mb-8">
+        <div className="flex items-center justify-between mb-3">
+          <CardTitle>Farm details</CardTitle>
+          {f.bagCapacity > 0 && <span className="text-xs text-text-muted font-mono">{occupancy} / {f.bagCapacity} bags</span>}
+        </div>
+        {f.bagCapacity > 0 && <Progress value={Math.min(100, (occupancy / f.bagCapacity) * 100)} className="mb-4" />}
+        <DataList layout="inline" items={[
+          { label: "Location", value: f.location || "—" },
+          { label: "Manager", value: f.manager || "—" },
+          { label: "Phone", value: f.phone || "—", mono: true },
+          { label: "Established", value: f.establishedOn || "—", mono: true },
+          { label: "Area", value: f.areaSqM ? `${f.areaSqM} m²` : "—", mono: true },
+          { label: "Bag capacity", value: f.bagCapacity ? `${f.bagCapacity}` : "—", mono: true },
+        ]} />
+      </Card>
 
       <Tabs defaultValue="rooms">
         <TabsList>
@@ -114,6 +131,10 @@ function FarmDetail() {
         fields={[
           { name: "name", label: "Room name", required: true, placeholder: "Room A-1" },
           { name: "purpose", label: "Purpose", type: "select", required: true, options: ["Colonization", "Pinning", "Fruiting", "Storage"].map((v) => ({ value: v, label: v })) },
+          { name: "sizeSqM", label: "Room size (m²)", type: "number", step: 5 },
+          { name: "bagCapacity", label: "Total bag capacity", type: "number", step: 50 },
+          { name: "rackCount", label: "Number of racks", type: "number" },
+          { name: "notes", label: "Notes", type: "textarea" },
         ]}
         initial={{ farmId: f.id }}
         onSubmit={async (v) => { await createRoom.mutateAsync({ ...v, farmId: f.id }); setRoomOpen(false); }}
@@ -126,7 +147,12 @@ function FarmDetail() {
           { name: "strainId", label: "Strain", type: "select", required: true, options: (strains.data ?? []).map((s) => ({ value: s.id, label: s.name })) },
           { name: "zoneId", label: "Zone", type: "select", required: true, options: farmZones.map((z) => ({ value: z.id, label: z.name })) },
           { name: "status", label: "Stage", type: "select", required: true, options: ["CREATED", "COLONIZING", "PINNING", "FRUITING", "HARVESTED", "CONTAMINATED"].map((v) => ({ value: v, label: v })) },
-          { name: "weightG", label: "Weight (g)", type: "number" },
+          { name: "substrate", label: "Substrate", type: "select", options: ["Supplemented sawdust", "Hardwood sawdust", "Sawdust + bran", "Paddy straw", "Coir pith", "Wheat straw"].map((v) => ({ value: v, label: v })) },
+          { name: "substrateWeightKg", label: "Substrate weight (kg)", type: "number", step: 0.1 },
+          { name: "inoculatedOn", label: "Inoculated on", type: "date" },
+          { name: "expectedHarvest", label: "Expected harvest", type: "date" },
+          { name: "weightG", label: "Harvest weight (g)", type: "number" },
+          { name: "flushCount", label: "Flushes harvested", type: "number" },
         ]}
         initial={{ status: "CREATED" }}
         onSubmit={async (v) => { await createBag.mutateAsync(v); setBagOpen(false); }}

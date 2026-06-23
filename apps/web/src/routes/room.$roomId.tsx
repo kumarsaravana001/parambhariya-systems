@@ -3,6 +3,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import {
   PageHeader, Breadcrumb, ZoneCard, BagCard, EmptyState, MetricCard,
   Tabs, TabsList, TabsTrigger, TabsContent, Button, DetailSkeleton, ErrorState,
+  Card, CardTitle, DataList, Progress,
 } from "@parambhariya/ui";
 import { LayoutGrid, Package, Plus, Thermometer, Droplets } from "lucide-react";
 import type { Zone } from "@parambhariya/types";
@@ -27,6 +28,7 @@ function RoomDetail() {
   const r = room.data;
   const zs = (zones.data ?? []).filter((z) => z.roomId === r.id);
   const roomBags = (bags.data ?? []).filter((b) => zs.some((z) => z.id === b.zoneId));
+  const roomActive = roomBags.filter((b) => !["HARVESTED", "CONTAMINATED", "DISPOSED"].includes(b.status)).length;
   const withT = zs.filter((z) => z.tempC != null);
   const avgT = withT.length ? withT.reduce((s, z) => s + (z.tempC ?? 0), 0) / withT.length : undefined;
   const avgR = withT.length ? withT.reduce((s, z) => s + (z.rhPct ?? 0), 0) / withT.length : undefined;
@@ -41,12 +43,29 @@ function RoomDetail() {
       <PageHeader title={r.name} description={r.purpose}
         actions={<Button variant="secondary" size="sm" onClick={() => setZoneOpen(true)}><Plus className="h-4 w-4" /> Add zone</Button>} />
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <MetricCard label="Zones" value={zs.length} icon={<LayoutGrid />} />
         <MetricCard label="Bags" value={roomBags.length} icon={<Package />} />
         <MetricCard label="Avg temp" value={avgT !== undefined ? avgT.toFixed(1) : "—"} unit="°C" icon={<Thermometer />} />
         <MetricCard label="Avg RH" value={avgR !== undefined ? avgR.toFixed(1) : "—"} unit="%" icon={<Droplets />} />
       </div>
+
+      {(r.sizeSqM > 0 || r.bagCapacity > 0 || r.rackCount > 0 || r.notes) && (
+        <Card padding="lg" className="mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <CardTitle>Room details</CardTitle>
+            {r.bagCapacity > 0 && <span className="text-xs text-text-muted font-mono">{roomActive} / {r.bagCapacity} bags</span>}
+          </div>
+          {r.bagCapacity > 0 && <Progress value={Math.min(100, (roomActive / r.bagCapacity) * 100)} className="mb-4" />}
+          <DataList layout="inline" items={[
+            { label: "Size", value: r.sizeSqM ? `${r.sizeSqM} m²` : "—", mono: true },
+            { label: "Bag capacity", value: r.bagCapacity ? `${r.bagCapacity}` : "—", mono: true },
+            { label: "Racks", value: r.rackCount ? `${r.rackCount}` : "—", mono: true },
+            { label: "Purpose", value: r.purpose },
+          ]} />
+          {r.notes && <p className="text-sm text-text-muted mt-4 pt-4 border-t border-border-default">{r.notes}</p>}
+        </Card>
+      )}
 
       <Tabs defaultValue="zones">
         <TabsList>
@@ -88,11 +107,13 @@ function RoomDetail() {
         open={zoneOpen} onOpenChange={setZoneOpen} title="Add zone" submitLabel="Add zone" busy={createZone.isPending}
         fields={[
           { name: "name", label: "Zone name", required: true, placeholder: "Fruiting Chamber 1", span: 2 },
+          { name: "bagCapacity", label: "Bag capacity", type: "number", step: 25 },
+          { name: "deviceId", label: "Controller / device ID", placeholder: "EDGE-A2-01" },
           { name: "setpointTempC", label: "Temp setpoint (°C)", type: "number", step: 0.5, min: 0, max: 45 },
           { name: "setpointRhPct", label: "Humidity setpoint (%)", type: "number", step: 1, min: 0, max: 100 },
           { name: "setpointCo2Ppm", label: "CO₂ setpoint (ppm)", type: "number", step: 50, min: 0, max: 5000 },
         ]}
-        initial={{ roomId: r.id, setpointTempC: 24, setpointRhPct: 88, setpointCo2Ppm: 1000 }}
+        initial={{ roomId: r.id, bagCapacity: 0, deviceId: "", setpointTempC: 24, setpointRhPct: 88, setpointCo2Ppm: 1000 }}
         onSubmit={async (v) => { await createZone.mutateAsync({ ...v, roomId: r.id }); setZoneOpen(false); }}
       />
     </div>

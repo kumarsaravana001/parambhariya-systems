@@ -67,7 +67,11 @@ function ZoneDetail() {
         { label: z.name },
       ]} />
       <PageHeader title={z.name}
-        description={`${zoneBags.length} bags · ${room?.name ?? ""}`}
+        description={[
+          z.bagCapacity ? `${zoneBags.length} / ${z.bagCapacity} bags` : `${zoneBags.length} bags`,
+          room?.name,
+          z.deviceId,
+        ].filter(Boolean).join(" · ")}
         actions={<Tag tone={driverMode === "api" ? "success" : "info"} size="sm">{driverMode === "api" ? "● Live (API)" : "● Live (demo)"}</Tag>} />
 
       {zoneAlerts.length > 0 && (

@@ -78,6 +78,11 @@ function FarmsScreen() {
         fields={[
           { name: "name", label: "Farm name", required: true, placeholder: "Anaimalai Block A", span: 2 },
           { name: "location", label: "Location", placeholder: "Anaimalai, Tamil Nadu", span: 2 },
+          { name: "areaSqM", label: "Cultivation area (m²)", type: "number", step: 10 },
+          { name: "bagCapacity", label: "Total bag capacity", type: "number", step: 50 },
+          { name: "manager", label: "Manager", placeholder: "Who runs this farm" },
+          { name: "phone", label: "Contact phone", placeholder: "+91 …" },
+          { name: "establishedOn", label: "Established on", type: "date", span: 2 },
         ]}
         onSubmit={async (v) => {
           if (editing) await update.mutateAsync({ id: editing.id, body: v });

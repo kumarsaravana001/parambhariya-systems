@@ -13,7 +13,7 @@ import { seedData } from "./seed-data";
  * driver is the real path; this is the offline twin.
  */
 
-const KEY = "parambhariya.db.v1";
+const KEY = "parambhariya.db.v2"; // bump on schema change → reseeds with new fields
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const nowISO = () => new Date().toISOString();
 
@@ -170,13 +170,15 @@ export function localDriver(): Driver {
 
 function defaultsFor(r: Resource): Record<string, any> {
   switch (r) {
-    case "zones": return { setpointTempC: 24, setpointRhPct: 88, setpointCo2Ppm: 1000 };
-    case "bags": return { stageProgress: 0, weightG: null };
+    case "farms": return { location: "", areaSqM: 0, bagCapacity: 0, manager: "", phone: "", establishedOn: "" };
+    case "rooms": return { sizeSqM: 0, bagCapacity: 0, rackCount: 0, notes: "" };
+    case "zones": return { bagCapacity: 0, deviceId: "", setpointTempC: 24, setpointRhPct: 88, setpointCo2Ppm: 1000 };
+    case "bags": return { stageProgress: 0, weightG: null, substrate: "", substrateWeightKg: 0, inoculatedOn: "", expectedHarvest: "", flushCount: 0, notes: "" };
     case "cultures": return { contaminated: false, gen: 1, stock: 0, storageId: null, categoryId: null, intervalDays: 15, nextTransfer: null, commonName: "", strainCode: "" };
     case "storage": return { parentId: null, tempRange: "" };
     case "categories": return { parentId: null };
     case "custom-fields": return { required: false };
-    case "strains": return { scientific: "", yieldKg: 0 };
+    case "strains": return { scientific: "", optimalCo2Max: 1000, colonizationDays: 0, fruitingDays: 0, yieldKg: 0, supplier: "", notes: "" };
     default: return {};
   }
 }

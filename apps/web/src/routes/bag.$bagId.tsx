@@ -67,27 +67,46 @@ function BagDetail() {
         )}
       </Card>
 
-      <Card padding="lg">
-        <CardTitle className="mb-4">Details</CardTitle>
-        <DataList layout="inline" items={[
-          { label: "Strain", value: strain?.name ?? "—" },
-          { label: "Scientific", value: strain?.scientific ?? "—" },
-          { label: "Zone", value: <Link to="/zone/$zoneId" params={{ zoneId: zone?.id ?? "" }} className="text-brand-700 hover:underline">{zone?.name}</Link> },
-          { label: "Created", value: b.createdAt.slice(0, 10), mono: true },
-          { label: "Stage", value: b.status, mono: true },
-          { label: "Weight", value: b.weightG ? `${b.weightG} g` : "—", mono: true },
-          { label: "Cycle est.", value: strain ? `${strain.cycleDays} days` : "—", mono: true },
-        ]} />
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card padding="lg">
+          <CardTitle className="mb-4">Details</CardTitle>
+          <DataList layout="inline" items={[
+            { label: "Strain", value: strain?.name ?? "—" },
+            { label: "Scientific", value: strain?.scientific ?? "—" },
+            { label: "Zone", value: <Link to="/zone/$zoneId" params={{ zoneId: zone?.id ?? "" }} className="text-brand-700 hover:underline">{zone?.name}</Link> },
+            { label: "Stage", value: b.status, mono: true },
+            { label: "Created", value: b.createdAt.slice(0, 10), mono: true },
+            { label: "Cycle est.", value: strain ? `${strain.cycleDays} days` : "—", mono: true },
+          ]} />
+        </Card>
+        <Card padding="lg">
+          <CardTitle className="mb-4">Production</CardTitle>
+          <DataList layout="inline" items={[
+            { label: "Substrate", value: b.substrate || "—" },
+            { label: "Substrate weight", value: b.substrateWeightKg ? `${b.substrateWeightKg} kg` : "—", mono: true },
+            { label: "Inoculated", value: b.inoculatedOn || "—", mono: true },
+            { label: "Expected harvest", value: b.expectedHarvest || "—", mono: true },
+            { label: "Harvest weight", value: b.weightG ? `${b.weightG} g` : "—", mono: true },
+            { label: "Flushes", value: String(b.flushCount ?? 0), mono: true },
+          ]} />
+          {b.notes && <p className="text-sm text-text-muted mt-4 pt-4 border-t border-border-default">{b.notes}</p>}
+        </Card>
+      </div>
 
       <EntityForm
         open={editOpen} onOpenChange={setEditOpen} title={`Edit ${b.code}`} submitLabel="Save changes" busy={update.isPending}
-        initial={{ status: b.status, stageProgress: b.stageProgress, weightG: b.weightG ?? "", zoneId: b.zoneId }}
+        initial={{ status: b.status, stageProgress: b.stageProgress, weightG: b.weightG ?? "", zoneId: b.zoneId, substrate: b.substrate, substrateWeightKg: b.substrateWeightKg, inoculatedOn: b.inoculatedOn, expectedHarvest: b.expectedHarvest, flushCount: b.flushCount, notes: b.notes }}
         fields={[
           { name: "status", label: "Stage", type: "select", required: true, options: ["CREATED", "COLONIZING", "PINNING", "FRUITING", "HARVESTED", "CONTAMINATED", "DISPOSED"].map((v) => ({ value: v, label: v })) },
           { name: "stageProgress", label: "Stage progress (0–1)", type: "number", step: 0.05, min: 0, max: 1 },
           { name: "zoneId", label: "Zone", type: "select", options: (zones.data ?? []).map((z) => ({ value: z.id, label: z.name })) },
-          { name: "weightG", label: "Weight (g)", type: "number" },
+          { name: "substrate", label: "Substrate", type: "select", options: ["Supplemented sawdust", "Hardwood sawdust", "Sawdust + bran", "Paddy straw", "Coir pith", "Wheat straw"].map((v) => ({ value: v, label: v })) },
+          { name: "substrateWeightKg", label: "Substrate weight (kg)", type: "number", step: 0.1 },
+          { name: "inoculatedOn", label: "Inoculated on", type: "date" },
+          { name: "expectedHarvest", label: "Expected harvest", type: "date" },
+          { name: "weightG", label: "Harvest weight (g)", type: "number" },
+          { name: "flushCount", label: "Flushes harvested", type: "number" },
+          { name: "notes", label: "Notes", type: "textarea" },
         ]}
         onSubmit={async (v) => { await update.mutateAsync({ id: b.id, body: v }); setEditOpen(false); }}
       />

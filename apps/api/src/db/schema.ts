@@ -8,14 +8,24 @@ export const strains = sqliteTable("strains", {
   optimalTempMax: real("optimal_temp_max").notNull(),
   optimalRhMin: real("optimal_rh_min").notNull(),
   optimalRhMax: real("optimal_rh_max").notNull(),
+  optimalCo2Max: real("optimal_co2_max").notNull().default(1000),
   cycleDays: integer("cycle_days").notNull(),
+  colonizationDays: integer("colonization_days").notNull().default(0),
+  fruitingDays: integer("fruiting_days").notNull().default(0),
   yieldKg: real("yield_kg").notNull().default(0),
+  supplier: text("supplier").notNull().default(""),
+  notes: text("notes").notNull().default(""),
 });
 
 export const farms = sqliteTable("farms", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   location: text("location").notNull().default(""),
+  areaSqM: real("area_sq_m").notNull().default(0),
+  bagCapacity: integer("bag_capacity").notNull().default(0),
+  manager: text("manager").notNull().default(""),
+  phone: text("phone").notNull().default(""),
+  establishedOn: text("established_on").notNull().default(""),
 });
 
 export const rooms = sqliteTable("rooms", {
@@ -23,12 +33,18 @@ export const rooms = sqliteTable("rooms", {
   farmId: text("farm_id").notNull(),
   name: text("name").notNull(),
   purpose: text("purpose").notNull(),
+  sizeSqM: real("size_sq_m").notNull().default(0),
+  bagCapacity: integer("bag_capacity").notNull().default(0),
+  rackCount: integer("rack_count").notNull().default(0),
+  notes: text("notes").notNull().default(""),
 });
 
 export const zones = sqliteTable("zones", {
   id: text("id").primaryKey(),
   roomId: text("room_id").notNull(),
   name: text("name").notNull(),
+  bagCapacity: integer("bag_capacity").notNull().default(0),
+  deviceId: text("device_id").notNull().default(""),
   setpointTempC: real("setpoint_temp_c").notNull().default(24),
   setpointRhPct: real("setpoint_rh_pct").notNull().default(88),
   setpointCo2Ppm: real("setpoint_co2_ppm").notNull().default(1000),
@@ -48,6 +64,12 @@ export const bags = sqliteTable("bags", {
   status: text("status").notNull(),
   stageProgress: real("stage_progress").notNull().default(0),
   weightG: real("weight_g"),
+  substrate: text("substrate").notNull().default(""),
+  substrateWeightKg: real("substrate_weight_kg").notNull().default(0),
+  inoculatedOn: text("inoculated_on").notNull().default(""),
+  expectedHarvest: text("expected_harvest").notNull().default(""),
+  flushCount: integer("flush_count").notNull().default(0),
+  notes: text("notes").notNull().default(""),
   createdAt: text("created_at").notNull(),
 });
 

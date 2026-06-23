@@ -14,6 +14,10 @@ const name = z.string().min(1).max(200);
 const shortText = z.string().max(200);
 const code = z.string().min(1).max(64);
 const shortCode = z.string().max(64);
+const notes = z.string().max(2000).default("");
+const dateStr = z.string().max(40).default(""); // YYYY-MM-DD (or empty)
+const count = z.number().int().nonnegative().default(0);
+const area = z.number().nonnegative().default(0);
 
 /* ── Strain ─────────────────────────────────────────────────── */
 export const Strain = z.object({
@@ -24,8 +28,13 @@ export const Strain = z.object({
   optimalTempMax: z.number(),
   optimalRhMin: z.number(),
   optimalRhMax: z.number(),
+  optimalCo2Max: z.number().nonnegative().default(1000),
   cycleDays: z.number().int().positive(),
+  colonizationDays: count,        // days from inoculation to full colonization
+  fruitingDays: count,            // days in fruiting
   yieldKg: z.number().nonnegative().default(0),
+  supplier: shortText.default(""),
+  notes,
 });
 export const StrainCreate = Strain.omit({ id: true });
 export type Strain = z.infer<typeof Strain>;
@@ -36,6 +45,11 @@ export const Farm = z.object({
   id,
   name,
   location: shortText.default(""),
+  areaSqM: area,            // total cultivation area
+  bagCapacity: count,       // max bags the farm can hold
+  manager: shortText.default(""),
+  phone: shortCode.default(""),
+  establishedOn: dateStr,
 });
 export const FarmCreate = Farm.omit({ id: true });
 export type Farm = z.infer<typeof Farm>;
@@ -48,6 +62,10 @@ export const Room = z.object({
   farmId: id,
   name,
   purpose: RoomPurpose,
+  sizeSqM: area,            // floor area of the room
+  bagCapacity: count,       // total bags this room holds
+  rackCount: count,         // number of racks/shelves
+  notes,
 });
 export const RoomCreate = Room.omit({ id: true });
 export type Room = z.infer<typeof Room>;
@@ -60,6 +78,8 @@ export const Zone = z.object({
   id,
   roomId: id,
   name,
+  bagCapacity: count,        // bags this zone holds
+  deviceId: shortCode.default(""), // edge controller / sensor module id
   setpointTempC: z.number().default(24),
   setpointRhPct: z.number().default(88),
   setpointCo2Ppm: z.number().default(1000),
@@ -71,7 +91,7 @@ export const Zone = z.object({
   status: ZoneStatus.default("OK"),
   updatedAt: ISO.nullable().default(null),
 });
-export const ZoneCreate = Zone.pick({ roomId: true, name: true, setpointTempC: true, setpointRhPct: true, setpointCo2Ppm: true });
+export const ZoneCreate = Zone.pick({ roomId: true, name: true, bagCapacity: true, deviceId: true, setpointTempC: true, setpointRhPct: true, setpointCo2Ppm: true });
 export const ZoneSetpoint = z.object({
   setpointTempC: z.number().min(0).max(45).optional(),
   setpointRhPct: z.number().min(0).max(100).optional(),
@@ -94,9 +114,16 @@ export const Bag = z.object({
   status: LifecycleStage,
   stageProgress: z.number().min(0).max(1).default(0),
   weightG: z.number().nonnegative().nullable().default(null),
+  substrate: shortText.default(""),              // e.g. Sawdust, Paddy straw, Coir pith
+  substrateWeightKg: z.number().nonnegative().default(0),
+  inoculatedOn: dateStr,
+  expectedHarvest: dateStr,
+  flushCount: count,                             // harvest flushes taken
+  notes,
   createdAt: ISO,
 });
-export const BagCreate = Bag.omit({ id: true, createdAt: true }).partial({ stageProgress: true, weightG: true });
+export const BagCreate = Bag.omit({ id: true, createdAt: true })
+  .partial({ stageProgress: true, weightG: true, substrate: true, substrateWeightKg: true, inoculatedOn: true, expectedHarvest: true, flushCount: true, notes: true });
 export type Bag = z.infer<typeof Bag>;
 export type BagCreate = z.infer<typeof BagCreate>;
 export type LifecycleStage = z.infer<typeof LifecycleStage>;

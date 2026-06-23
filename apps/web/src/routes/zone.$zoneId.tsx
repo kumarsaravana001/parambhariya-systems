@@ -4,8 +4,12 @@ import {
   PageHeader, Breadcrumb, BigReading, AlertBanner, BagCard, EmptyState, Card, CardTitle,
   Button, Slider, DetailSkeleton, ErrorState, EnvChart, Tag,
 } from "@parambhariya/ui";
-import { Thermometer, Droplets, Wind, Sun, Package, Gauge, RotateCcw } from "lucide-react";
-import type { Zone } from "@parambhariya/types";
+import { Thermometer, Droplets, Wind, Sun, Package, Gauge, RotateCcw, Sprout, AlertTriangle, Check } from "lucide-react";
+import type { Zone, Room, Strain, Bag, CultivationStage } from "@parambhariya/types";
+import {
+  stageTargetForStrain, setpointsForTarget, climateFit, purposeToStage, dominantCropStage,
+  CULTIVATION_STAGE_ORDER, STAGE_CLIMATE,
+} from "@parambhariya/types";
 import {
   useZone, useRooms, useFarm, useBags, useStrains, useAlerts, useAckAlert,
   useZoneReadings, useSetSetpoint, useLiveReadings, driverMode,
@@ -25,6 +29,79 @@ function SetpointRow({ label, unit, value, min, max, step, onCommit }: {
         onValueChange={setLocal} onValueCommit={(v) => onCommit(v[0]!)} showBubble formatValue={(v) => `${v} ${unit}`} />
       <div className="w-20 text-right font-mono text-sm text-text-primary">{local[0]} {unit}</div>
     </div>
+  );
+}
+
+const STAGE_TONE: Record<CultivationStage, "info" | "warn" | "success"> = {
+  colonization: "info", pinning: "warn", fruiting: "success",
+};
+const VERDICT_TEXT = { ok: "text-success-fg", warn: "text-warn-fg", off: "text-danger-fg" } as const;
+const METRIC_LABEL = { temp: "Temp", rh: "Humidity", co2: "CO₂" } as const;
+const METRIC_UNIT = { temp: "°C", rh: "%", co2: "ppm" } as const;
+
+/** Stage-appropriate climate: what the crop in this zone needs vs what's set, with one-click apply. */
+function ClimateProfileCard({ zone, room, strain, bags, onApply, busy }: {
+  zone: Zone; room?: Room; strain?: Strain; bags: Bag[];
+  onApply: (body: { setpointTempC: number; setpointRhPct: number; setpointCo2Ppm: number }) => void; busy: boolean;
+}) {
+  const cropStage = dominantCropStage(bags.map((b) => b.status));
+  const intendedStage = room ? purposeToStage(room.purpose) : null;
+  const activeStage: CultivationStage = cropStage ?? intendedStage ?? "colonization";
+  const target = stageTargetForStrain(strain, activeStage);
+  const fit = climateFit(
+    { setpointTempC: zone.setpointTempC, setpointRhPct: zone.setpointRhPct, setpointCo2Ppm: zone.setpointCo2Ppm },
+    target,
+  );
+  const off = fit.metrics.filter((m) => m.verdict !== "ok");
+  const source = cropStage ? "from the bags growing here" : intendedStage ? `from this ${room?.purpose.toLowerCase()} room` : "default";
+
+  return (
+    <Card padding="lg" className="mb-6">
+      <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center gap-2"><Sprout className="h-5 w-5 text-brand-700" /><CardTitle>Climate profile</CardTitle></div>
+        <Tag tone={STAGE_TONE[activeStage]} size="sm">{target.label} stage · {source}</Tag>
+      </div>
+      <p className="text-sm text-text-muted mb-4">{target.why}</p>
+
+      {off.length > 0 ? (
+        <AlertBanner tone={fit.worst === "off" ? "critical" : "warning"} title={`Setpoints don't match the ${target.label.toLowerCase()} stage`} className="mb-4">
+          {off.map((m) => <span key={m.metric}>{METRIC_LABEL[m.metric]} {m.message}. </span>)}
+          {" "}Apply the {target.label.toLowerCase()} profile below to fix it.
+        </AlertBanner>
+      ) : (
+        <div className="flex items-center gap-2 text-sm text-success-fg mb-4"><Check className="h-4 w-4" /> Setpoints match the {target.label.toLowerCase()} stage.</div>
+      )}
+
+      {/* current vs target per metric */}
+      <div className="grid grid-cols-3 gap-3 mb-5">
+        {fit.metrics.map((m) => (
+          <div key={m.metric} className="rounded-lg border border-border-default p-3">
+            <div className="text-xs text-text-muted mb-1">{METRIC_LABEL[m.metric]}</div>
+            <div className="font-mono text-sm">
+              <span className={VERDICT_TEXT[m.verdict]}>{m.current}</span>
+              <span className="text-text-muted"> → {m.target} {METRIC_UNIT[m.metric]}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="text-xs text-text-muted mb-2 uppercase tracking-[0.06em] font-semibold">Apply a stage profile{strain ? ` · tuned for ${strain.name}` : ""}</div>
+      <div className="flex flex-wrap gap-2">
+        {CULTIVATION_STAGE_ORDER.map((stage) => {
+          const st = stageTargetForStrain(strain, stage);
+          const sp = setpointsForTarget(st);
+          const isActive = stage === activeStage;
+          return (
+            <Button key={stage} variant={isActive ? "primary" : "secondary"} size="sm" disabled={busy}
+              onClick={() => onApply(sp)} title={`${st.tempC} °C · ${st.rhPct} % · ${sp.setpointCo2Ppm} ppm`}>
+              {isActive && <AlertTriangle className="h-3.5 w-3.5" />}
+              {st.label} <span className="font-mono text-xs opacity-70">{st.tempC}° · {sp.setpointCo2Ppm}ppm</span>
+            </Button>
+          );
+        })}
+      </div>
+      <p className="text-xs text-text-muted mt-3">{STAGE_CLIMATE[activeStage].summary} Targets anchor to {strain ? `${strain.name}'s optimum` : "Oyster reference"}; CO₂ and light follow the stage.</p>
+    </Card>
   );
 }
 
@@ -59,6 +136,12 @@ function ZoneDetail() {
   const rd = readings.data ?? [];
   const commit = (body: any) => setSetpoint.mutate({ zoneId: z.id, body });
 
+  // dominant strain in this zone → anchor the climate targets to it
+  const strainCount = new Map<string, number>();
+  for (const b of zoneBags) strainCount.set(b.strainId, (strainCount.get(b.strainId) ?? 0) + 1);
+  const topStrainId = [...strainCount.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+  const zoneStrain = (strains.data ?? []).find((s) => s.id === topStrainId) ?? (strains.data ?? [])[0];
+
   return (
     <div>
       <Breadcrumb className="mb-2" items={[
@@ -79,6 +162,7 @@ function ZoneDetail() {
         { label: "Live readings", body: "The four tiles stream live temperature, humidity, CO₂ and light, with a sparkline trend and 'last reading' age." },
         { label: "Environment control", body: "Drag a setpoint slider — it's sent to the backend controller, which drives the reading toward your target and raises an alert if it can't hold it." },
         { label: "Why temperature matters", body: "Colonization speed depends on temperature. Holding the right setpoint here is what makes the Spawn ready-dates accurate." },
+        { label: "Climate profile", body: "Each growing stage needs a different climate. The card reads the stage your bags are actually in and warns if the setpoints still match a different stage — the classic 'colonized but won't fruit' trap. One click applies the right profile, tuned to the zone's strain." },
       ]} />
 
       {zoneAlerts.length > 0 && (
@@ -120,6 +204,9 @@ function ZoneDetail() {
           <SetpointRow label="CO₂" unit="ppm" value={z.setpointCo2Ppm} min={400} max={2000} step={50} onCommit={(v) => commit({ setpointCo2Ppm: v })} />
         </div>
       </Card>
+
+      <ClimateProfileCard zone={z} room={room} strain={zoneStrain} bags={zoneBags}
+        onApply={(body) => commit(body)} busy={setSetpoint.isPending} />
 
       {rd.length > 1 && (
         <Card padding="lg" className="mb-6">

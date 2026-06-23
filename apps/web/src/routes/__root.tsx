@@ -5,7 +5,7 @@ import {
 } from "@parambhariya/ui";
 import {
   Sprout, TriangleAlert, ChartBar, Dna, Settings, LogOut, Bell,
-  LayoutDashboard, Workflow, Component,
+  LayoutDashboard, Workflow, Component, FlaskConical,
 } from "lucide-react";
 import { alerts } from "../data/mock";
 
@@ -16,6 +16,7 @@ const NAV = [
   { label: "Alerts",     href: "/alerts",     icon: <TriangleAlert /> },
   { label: "Reports",    href: "/reports",    icon: <ChartBar /> },
   { label: "Flows",      href: "/flows",      icon: <Workflow /> },
+  { label: "Lab Portal", href: "/lab",        icon: <FlaskConical /> },
   { label: "Components", href: "/components", icon: <Component /> },
   { label: "Settings",   href: "/settings",   icon: <Settings /> },
 ];

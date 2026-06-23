@@ -13,14 +13,25 @@ import { Route as StrainsRouteImport } from "./routes/strains";
 import { Route as SettingsRouteImport } from "./routes/settings";
 import { Route as ReportsRouteImport } from "./routes/reports";
 import { Route as LoginRouteImport } from "./routes/login";
+import { Route as LabRouteImport } from "./routes/lab";
 import { Route as FlowsRouteImport } from "./routes/flows";
 import { Route as DashboardRouteImport } from "./routes/dashboard";
 import { Route as ComponentsRouteImport } from "./routes/components";
 import { Route as AlertsRouteImport } from "./routes/alerts";
 import { Route as IndexRouteImport } from "./routes/index";
+import { Route as LabIndexRouteImport } from "./routes/lab.index";
 import { Route as FarmsIndexRouteImport } from "./routes/farms.index";
 import { Route as ZoneZoneIdRouteImport } from "./routes/zone.$zoneId";
 import { Route as RoomRoomIdRouteImport } from "./routes/room.$roomId";
+import { Route as LabUsersRouteImport } from "./routes/lab.users";
+import { Route as LabSubscriptionRouteImport } from "./routes/lab.subscription";
+import { Route as LabStorageRouteImport } from "./routes/lab.storage";
+import { Route as LabSecurityRouteImport } from "./routes/lab.security";
+import { Route as LabDataRouteImport } from "./routes/lab.data";
+import { Route as LabCustomFieldsRouteImport } from "./routes/lab.custom-fields";
+import { Route as LabCulturesRouteImport } from "./routes/lab.cultures";
+import { Route as LabCategoriesRouteImport } from "./routes/lab.categories";
+import { Route as LabAuditRouteImport } from "./routes/lab.audit";
 import { Route as FarmsFarmIdRouteImport } from "./routes/farms.$farmId";
 import { Route as BagBagIdRouteImport } from "./routes/bag.$bagId";
 
@@ -42,6 +53,11 @@ const ReportsRoute = ReportsRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: "/login",
   path: "/login",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const LabRoute = LabRouteImport.update({
+  id: "/lab",
+  path: "/lab",
   getParentRoute: () => rootRouteImport,
 } as any);
 const FlowsRoute = FlowsRouteImport.update({
@@ -69,6 +85,11 @@ const IndexRoute = IndexRouteImport.update({
   path: "/",
   getParentRoute: () => rootRouteImport,
 } as any);
+const LabIndexRoute = LabIndexRouteImport.update({
+  id: "/",
+  path: "/",
+  getParentRoute: () => LabRoute,
+} as any);
 const FarmsIndexRoute = FarmsIndexRouteImport.update({
   id: "/farms/",
   path: "/farms/",
@@ -83,6 +104,51 @@ const RoomRoomIdRoute = RoomRoomIdRouteImport.update({
   id: "/room/$roomId",
   path: "/room/$roomId",
   getParentRoute: () => rootRouteImport,
+} as any);
+const LabUsersRoute = LabUsersRouteImport.update({
+  id: "/users",
+  path: "/users",
+  getParentRoute: () => LabRoute,
+} as any);
+const LabSubscriptionRoute = LabSubscriptionRouteImport.update({
+  id: "/subscription",
+  path: "/subscription",
+  getParentRoute: () => LabRoute,
+} as any);
+const LabStorageRoute = LabStorageRouteImport.update({
+  id: "/storage",
+  path: "/storage",
+  getParentRoute: () => LabRoute,
+} as any);
+const LabSecurityRoute = LabSecurityRouteImport.update({
+  id: "/security",
+  path: "/security",
+  getParentRoute: () => LabRoute,
+} as any);
+const LabDataRoute = LabDataRouteImport.update({
+  id: "/data",
+  path: "/data",
+  getParentRoute: () => LabRoute,
+} as any);
+const LabCustomFieldsRoute = LabCustomFieldsRouteImport.update({
+  id: "/custom-fields",
+  path: "/custom-fields",
+  getParentRoute: () => LabRoute,
+} as any);
+const LabCulturesRoute = LabCulturesRouteImport.update({
+  id: "/cultures",
+  path: "/cultures",
+  getParentRoute: () => LabRoute,
+} as any);
+const LabCategoriesRoute = LabCategoriesRouteImport.update({
+  id: "/categories",
+  path: "/categories",
+  getParentRoute: () => LabRoute,
+} as any);
+const LabAuditRoute = LabAuditRouteImport.update({
+  id: "/audit",
+  path: "/audit",
+  getParentRoute: () => LabRoute,
 } as any);
 const FarmsFarmIdRoute = FarmsFarmIdRouteImport.update({
   id: "/farms/$farmId",
@@ -101,15 +167,26 @@ export interface FileRoutesByFullPath {
   "/components": typeof ComponentsRoute;
   "/dashboard": typeof DashboardRoute;
   "/flows": typeof FlowsRoute;
+  "/lab": typeof LabRouteWithChildren;
   "/login": typeof LoginRoute;
   "/reports": typeof ReportsRoute;
   "/settings": typeof SettingsRoute;
   "/strains": typeof StrainsRoute;
   "/bag/$bagId": typeof BagBagIdRoute;
   "/farms/$farmId": typeof FarmsFarmIdRoute;
+  "/lab/audit": typeof LabAuditRoute;
+  "/lab/categories": typeof LabCategoriesRoute;
+  "/lab/cultures": typeof LabCulturesRoute;
+  "/lab/custom-fields": typeof LabCustomFieldsRoute;
+  "/lab/data": typeof LabDataRoute;
+  "/lab/security": typeof LabSecurityRoute;
+  "/lab/storage": typeof LabStorageRoute;
+  "/lab/subscription": typeof LabSubscriptionRoute;
+  "/lab/users": typeof LabUsersRoute;
   "/room/$roomId": typeof RoomRoomIdRoute;
   "/zone/$zoneId": typeof ZoneZoneIdRoute;
   "/farms/": typeof FarmsIndexRoute;
+  "/lab/": typeof LabIndexRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
@@ -123,9 +200,19 @@ export interface FileRoutesByTo {
   "/strains": typeof StrainsRoute;
   "/bag/$bagId": typeof BagBagIdRoute;
   "/farms/$farmId": typeof FarmsFarmIdRoute;
+  "/lab/audit": typeof LabAuditRoute;
+  "/lab/categories": typeof LabCategoriesRoute;
+  "/lab/cultures": typeof LabCulturesRoute;
+  "/lab/custom-fields": typeof LabCustomFieldsRoute;
+  "/lab/data": typeof LabDataRoute;
+  "/lab/security": typeof LabSecurityRoute;
+  "/lab/storage": typeof LabStorageRoute;
+  "/lab/subscription": typeof LabSubscriptionRoute;
+  "/lab/users": typeof LabUsersRoute;
   "/room/$roomId": typeof RoomRoomIdRoute;
   "/zone/$zoneId": typeof ZoneZoneIdRoute;
   "/farms": typeof FarmsIndexRoute;
+  "/lab": typeof LabIndexRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
@@ -134,15 +221,26 @@ export interface FileRoutesById {
   "/components": typeof ComponentsRoute;
   "/dashboard": typeof DashboardRoute;
   "/flows": typeof FlowsRoute;
+  "/lab": typeof LabRouteWithChildren;
   "/login": typeof LoginRoute;
   "/reports": typeof ReportsRoute;
   "/settings": typeof SettingsRoute;
   "/strains": typeof StrainsRoute;
   "/bag/$bagId": typeof BagBagIdRoute;
   "/farms/$farmId": typeof FarmsFarmIdRoute;
+  "/lab/audit": typeof LabAuditRoute;
+  "/lab/categories": typeof LabCategoriesRoute;
+  "/lab/cultures": typeof LabCulturesRoute;
+  "/lab/custom-fields": typeof LabCustomFieldsRoute;
+  "/lab/data": typeof LabDataRoute;
+  "/lab/security": typeof LabSecurityRoute;
+  "/lab/storage": typeof LabStorageRoute;
+  "/lab/subscription": typeof LabSubscriptionRoute;
+  "/lab/users": typeof LabUsersRoute;
   "/room/$roomId": typeof RoomRoomIdRoute;
   "/zone/$zoneId": typeof ZoneZoneIdRoute;
   "/farms/": typeof FarmsIndexRoute;
+  "/lab/": typeof LabIndexRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
@@ -152,15 +250,26 @@ export interface FileRouteTypes {
     | "/components"
     | "/dashboard"
     | "/flows"
+    | "/lab"
     | "/login"
     | "/reports"
     | "/settings"
     | "/strains"
     | "/bag/$bagId"
     | "/farms/$farmId"
+    | "/lab/audit"
+    | "/lab/categories"
+    | "/lab/cultures"
+    | "/lab/custom-fields"
+    | "/lab/data"
+    | "/lab/security"
+    | "/lab/storage"
+    | "/lab/subscription"
+    | "/lab/users"
     | "/room/$roomId"
     | "/zone/$zoneId"
-    | "/farms/";
+    | "/farms/"
+    | "/lab/";
   fileRoutesByTo: FileRoutesByTo;
   to:
     | "/"
@@ -174,9 +283,19 @@ export interface FileRouteTypes {
     | "/strains"
     | "/bag/$bagId"
     | "/farms/$farmId"
+    | "/lab/audit"
+    | "/lab/categories"
+    | "/lab/cultures"
+    | "/lab/custom-fields"
+    | "/lab/data"
+    | "/lab/security"
+    | "/lab/storage"
+    | "/lab/subscription"
+    | "/lab/users"
     | "/room/$roomId"
     | "/zone/$zoneId"
-    | "/farms";
+    | "/farms"
+    | "/lab";
   id:
     | "__root__"
     | "/"
@@ -184,15 +303,26 @@ export interface FileRouteTypes {
     | "/components"
     | "/dashboard"
     | "/flows"
+    | "/lab"
     | "/login"
     | "/reports"
     | "/settings"
     | "/strains"
     | "/bag/$bagId"
     | "/farms/$farmId"
+    | "/lab/audit"
+    | "/lab/categories"
+    | "/lab/cultures"
+    | "/lab/custom-fields"
+    | "/lab/data"
+    | "/lab/security"
+    | "/lab/storage"
+    | "/lab/subscription"
+    | "/lab/users"
     | "/room/$roomId"
     | "/zone/$zoneId"
-    | "/farms/";
+    | "/farms/"
+    | "/lab/";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
@@ -201,6 +331,7 @@ export interface RootRouteChildren {
   ComponentsRoute: typeof ComponentsRoute;
   DashboardRoute: typeof DashboardRoute;
   FlowsRoute: typeof FlowsRoute;
+  LabRoute: typeof LabRouteWithChildren;
   LoginRoute: typeof LoginRoute;
   ReportsRoute: typeof ReportsRoute;
   SettingsRoute: typeof SettingsRoute;
@@ -242,6 +373,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof LoginRouteImport;
       parentRoute: typeof rootRouteImport;
     };
+    "/lab": {
+      id: "/lab";
+      path: "/lab";
+      fullPath: "/lab";
+      preLoaderRoute: typeof LabRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     "/flows": {
       id: "/flows";
       path: "/flows";
@@ -277,6 +415,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof IndexRouteImport;
       parentRoute: typeof rootRouteImport;
     };
+    "/lab/": {
+      id: "/lab/";
+      path: "/";
+      fullPath: "/lab/";
+      preLoaderRoute: typeof LabIndexRouteImport;
+      parentRoute: typeof LabRoute;
+    };
     "/farms/": {
       id: "/farms/";
       path: "/farms";
@@ -298,6 +443,69 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof RoomRoomIdRouteImport;
       parentRoute: typeof rootRouteImport;
     };
+    "/lab/users": {
+      id: "/lab/users";
+      path: "/users";
+      fullPath: "/lab/users";
+      preLoaderRoute: typeof LabUsersRouteImport;
+      parentRoute: typeof LabRoute;
+    };
+    "/lab/subscription": {
+      id: "/lab/subscription";
+      path: "/subscription";
+      fullPath: "/lab/subscription";
+      preLoaderRoute: typeof LabSubscriptionRouteImport;
+      parentRoute: typeof LabRoute;
+    };
+    "/lab/storage": {
+      id: "/lab/storage";
+      path: "/storage";
+      fullPath: "/lab/storage";
+      preLoaderRoute: typeof LabStorageRouteImport;
+      parentRoute: typeof LabRoute;
+    };
+    "/lab/security": {
+      id: "/lab/security";
+      path: "/security";
+      fullPath: "/lab/security";
+      preLoaderRoute: typeof LabSecurityRouteImport;
+      parentRoute: typeof LabRoute;
+    };
+    "/lab/data": {
+      id: "/lab/data";
+      path: "/data";
+      fullPath: "/lab/data";
+      preLoaderRoute: typeof LabDataRouteImport;
+      parentRoute: typeof LabRoute;
+    };
+    "/lab/custom-fields": {
+      id: "/lab/custom-fields";
+      path: "/custom-fields";
+      fullPath: "/lab/custom-fields";
+      preLoaderRoute: typeof LabCustomFieldsRouteImport;
+      parentRoute: typeof LabRoute;
+    };
+    "/lab/cultures": {
+      id: "/lab/cultures";
+      path: "/cultures";
+      fullPath: "/lab/cultures";
+      preLoaderRoute: typeof LabCulturesRouteImport;
+      parentRoute: typeof LabRoute;
+    };
+    "/lab/categories": {
+      id: "/lab/categories";
+      path: "/categories";
+      fullPath: "/lab/categories";
+      preLoaderRoute: typeof LabCategoriesRouteImport;
+      parentRoute: typeof LabRoute;
+    };
+    "/lab/audit": {
+      id: "/lab/audit";
+      path: "/audit";
+      fullPath: "/lab/audit";
+      preLoaderRoute: typeof LabAuditRouteImport;
+      parentRoute: typeof LabRoute;
+    };
     "/farms/$farmId": {
       id: "/farms/$farmId";
       path: "/farms/$farmId";
@@ -315,12 +523,41 @@ declare module "@tanstack/react-router" {
   }
 }
 
+interface LabRouteChildren {
+  LabAuditRoute: typeof LabAuditRoute;
+  LabCategoriesRoute: typeof LabCategoriesRoute;
+  LabCulturesRoute: typeof LabCulturesRoute;
+  LabCustomFieldsRoute: typeof LabCustomFieldsRoute;
+  LabDataRoute: typeof LabDataRoute;
+  LabSecurityRoute: typeof LabSecurityRoute;
+  LabStorageRoute: typeof LabStorageRoute;
+  LabSubscriptionRoute: typeof LabSubscriptionRoute;
+  LabUsersRoute: typeof LabUsersRoute;
+  LabIndexRoute: typeof LabIndexRoute;
+}
+
+const LabRouteChildren: LabRouteChildren = {
+  LabAuditRoute: LabAuditRoute,
+  LabCategoriesRoute: LabCategoriesRoute,
+  LabCulturesRoute: LabCulturesRoute,
+  LabCustomFieldsRoute: LabCustomFieldsRoute,
+  LabDataRoute: LabDataRoute,
+  LabSecurityRoute: LabSecurityRoute,
+  LabStorageRoute: LabStorageRoute,
+  LabSubscriptionRoute: LabSubscriptionRoute,
+  LabUsersRoute: LabUsersRoute,
+  LabIndexRoute: LabIndexRoute,
+};
+
+const LabRouteWithChildren = LabRoute._addFileChildren(LabRouteChildren);
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlertsRoute: AlertsRoute,
   ComponentsRoute: ComponentsRoute,
   DashboardRoute: DashboardRoute,
   FlowsRoute: FlowsRoute,
+  LabRoute: LabRouteWithChildren,
   LoginRoute: LoginRoute,
   ReportsRoute: ReportsRoute,
   SettingsRoute: SettingsRoute,

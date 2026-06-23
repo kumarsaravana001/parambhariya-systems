@@ -24,6 +24,7 @@ export * from "./primitives/Skeleton";
 export * from "./primitives/Slider";
 export * from "./primitives/Spinner";
 export * from "./primitives/Switch";
+export * from "./primitives/Table";
 export * from "./primitives/Tabs";
 export * from "./primitives/Tag";
 export * from "./primitives/Textarea";

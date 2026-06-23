@@ -9,3 +9,9 @@ ios/App/App/public
 android/app/src/main/assets/public
 .env
 .env.local
+
+# SQLite runtime data
+apps/api/data
+*.db
+*.db-wal
+*.db-shm

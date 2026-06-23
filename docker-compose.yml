@@ -1,0 +1,35 @@
+# Self-host the full stack: API (with persistent SQLite volume) + static web.
+# Usage:
+#   docker compose up --build
+#   web  → http://localhost:8080
+#   api  → http://localhost:8787
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "8787:8787"
+    environment:
+      - PORT=8787
+      - DATABASE_PATH=/data/parambhariya.db
+      - LOOP_INTERVAL_MS=3000
+    volumes:
+      - api-data:/data
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        # point the web app at the API container (browser reaches it on localhost:8787)
+        VITE_API_URL: http://localhost:8787
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  api-data:

@@ -1,12 +1,14 @@
 import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  Card, Button, Alert, Tag, Checkbox, Label, Input, FormField, IconButton, Table, THead, TBody, TR, TH, TD,
+  Card, Button, Alert, Tag, Checkbox, Label, Input, FormField, IconButton,
+  Table, THead, TBody, TR, TH, TD, ListSkeleton, ErrorState, EmptyState,
 } from "@parambhariya/ui";
 import { Plus, Type, Hash, Calendar, List, AlignLeft, Trash2 } from "lucide-react";
-import { customFields, type CustomField } from "../data/lab";
+import type { CustomField, CustomFieldType } from "@parambhariya/types";
+import { useCustomFields, useCreate, useRemove } from "../lib/queries";
 
-const TYPES: { type: CustomField["type"]; icon: React.ReactNode; use: string }[] = [
+const TYPES: { type: CustomFieldType; icon: React.ReactNode; use: string }[] = [
   { type: "Text", icon: <Type />, use: "Short text input, single line" },
   { type: "Number", icon: <Hash />, use: "Numeric value" },
   { type: "Date", icon: <Calendar />, use: "Date picker" },
@@ -15,9 +17,23 @@ const TYPES: { type: CustomField["type"]; icon: React.ReactNode; use: string }[]
 ];
 
 function CustomFields() {
+  const fields = useCustomFields();
+  const create = useCreate<CustomField>("custom-fields");
+  const remove = useRemove("custom-fields");
   const [adding, setAdding] = React.useState(false);
-  const [fields, setFields] = React.useState(customFields);
-  const [type, setType] = React.useState<CustomField["type"]>("Text");
+  const [label, setLabel] = React.useState("");
+  const [type, setType] = React.useState<CustomFieldType>("Text");
+  const [required, setRequired] = React.useState(false);
+
+  if (fields.isLoading) return <ListSkeleton rows={3} />;
+  if (fields.error) return <ErrorState title="Failed to load custom fields" onRetry={() => fields.refetch()} />;
+  const list = fields.data ?? [];
+
+  const save = async () => {
+    if (!label.trim()) return;
+    await create.mutateAsync({ label: label.trim(), type, required });
+    setLabel(""); setType("Text"); setRequired(false); setAdding(false);
+  };
 
   return (
     <div>
@@ -31,16 +47,14 @@ function CustomFields() {
       </Alert>
 
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-text-primary">{fields.length} custom fields</h3>
-        <Button size="sm" variant={adding ? "secondary" : "primary"} onClick={() => setAdding((a) => !a)}>
-          <Plus className="h-4 w-4" /> Add field
-        </Button>
+        <h3 className="text-sm font-semibold text-text-primary">{list.length} custom fields</h3>
+        <Button size="sm" variant={adding ? "secondary" : "primary"} onClick={() => setAdding((a) => !a)}><Plus className="h-4 w-4" /> Add field</Button>
       </div>
 
       {adding && (
         <Card padding="lg" className="mb-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField label="Label" htmlFor="cf-label" required><Input id="cf-label" placeholder="Collection Site" /></FormField>
+            <FormField label="Label" htmlFor="cf-label" required><Input id="cf-label" placeholder="Collection Site" value={label} onChange={(e) => setLabel(e.target.value)} /></FormField>
             <div className="flex flex-col gap-1.5">
               <Label>Field Type</Label>
               <div className="flex flex-wrap gap-2">
@@ -53,26 +67,23 @@ function CustomFields() {
               </div>
             </div>
           </div>
-          <label className="flex items-center gap-2 mt-4">
-            <Checkbox /> <span className="text-sm text-text-secondary">Required field — users must fill this in before saving a culture</span>
-          </label>
-          <div className="flex justify-end gap-2 mt-4">
-            <Button variant="secondary" size="sm" onClick={() => setAdding(false)}>Cancel</Button>
-            <Button size="sm" onClick={() => setAdding(false)}>Save field</Button>
-          </div>
+          <label className="flex items-center gap-2 mt-4"><Checkbox checked={required} onCheckedChange={(v) => setRequired(!!v)} /> <span className="text-sm text-text-secondary">Required field — users must fill this in before saving a culture</span></label>
+          <div className="flex justify-end gap-2 mt-4"><Button variant="secondary" size="sm" onClick={() => setAdding(false)}>Cancel</Button><Button size="sm" onClick={save} loading={create.isPending}>Save field</Button></div>
         </Card>
       )}
 
-      {fields.length > 0 && (
+      {list.length === 0 ? (
+        <EmptyState icon={<Plus />} title="No custom fields yet" description="Add fields that are specific to your lab's workflow." />
+      ) : (
         <Table>
           <THead><TR className="hover:bg-transparent"><TH>Label</TH><TH>Type</TH><TH>Required</TH><TH className="text-right">Actions</TH></TR></THead>
           <TBody>
-            {fields.map((f) => (
+            {list.map((f) => (
               <TR key={f.id}>
                 <TD className="font-medium">{f.label}</TD>
                 <TD><Tag tone="neutral" size="sm">{f.type}</Tag></TD>
                 <TD>{f.required ? <Tag tone="warn" size="sm">Required</Tag> : <span className="text-text-muted text-xs">Optional</span>}</TD>
-                <TD className="text-right"><IconButton aria-label={`Delete ${f.label}`} variant="ghost" size="sm" className="text-danger-fg" onClick={() => setFields((xs) => xs.filter((x) => x.id !== f.id))}><Trash2 /></IconButton></TD>
+                <TD className="text-right"><IconButton aria-label="Delete" variant="ghost" size="sm" className="text-danger-fg" onClick={() => remove.mutate(f.id)}><Trash2 /></IconButton></TD>
               </TR>
             ))}
           </TBody>

@@ -5,8 +5,11 @@
   "packageManager": "pnpm@9.15.9",
   "scripts": {
     "dev": "pnpm --filter @parambhariya/web dev",
+    "dev:api": "pnpm --filter @parambhariya/api dev",
+    "dev:full": "pnpm --parallel --filter @parambhariya/api --filter @parambhariya/web dev",
     "build": "pnpm -r build",
     "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
     "lint": "pnpm -r lint",
     "cap:sync": "pnpm --filter @parambhariya/web cap:sync",
     "ios": "pnpm --filter @parambhariya/web ios",

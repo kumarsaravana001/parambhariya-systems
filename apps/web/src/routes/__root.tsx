@@ -7,7 +7,7 @@ import {
   Sprout, TriangleAlert, ChartBar, Dna, Settings, LogOut, Bell,
   LayoutDashboard, Workflow, Component, FlaskConical,
 } from "lucide-react";
-import { alerts } from "../data/mock";
+import { useAlerts, useLiveReadings } from "../lib/queries";
 
 const NAV = [
   { label: "Dashboard",  href: "/dashboard",  icon: <LayoutDashboard /> },
@@ -25,6 +25,11 @@ function Shell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isLogin = pathname === "/" || pathname === "/login";
 
+  // Keep the live control loop subscription + alert badge running app-wide.
+  useLiveReadings();
+  const alertsQ = useAlerts(true);
+  const openAlerts = (alertsQ.data ?? []).length;
+
   if (isLogin) {
     return (
       <TooltipProvider>
@@ -32,8 +37,6 @@ function Shell() {
       </TooltipProvider>
     );
   }
-
-  const openAlerts = alerts.filter((a) => !a.acknowledged).length;
 
   const items = NAV.map((n) => ({
     ...n,

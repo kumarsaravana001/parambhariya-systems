@@ -19,7 +19,8 @@
     "baseUrl": ".",
     "paths": {
       "@parambhariya/ui": ["libs/ui/src/index.ts"],
-      "@parambhariya/ui/*": ["libs/ui/src/*"]
+      "@parambhariya/ui/*": ["libs/ui/src/*"],
+      "@parambhariya/types": ["libs/types/src/index.ts"]
     }
   }
 }

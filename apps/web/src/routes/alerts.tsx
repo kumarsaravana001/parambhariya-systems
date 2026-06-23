@@ -1,74 +1,65 @@
 import * as React from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import {
-  PageHeader, EmptyState, FilterChip, AlertRow,
-} from "@parambhariya/ui";
+import { PageHeader, EmptyState, FilterChip, AlertRow, ListSkeleton, ErrorState } from "@parambhariya/ui";
 import { BellOff } from "lucide-react";
-import { alerts as seed, zones, rooms } from "../data/mock";
+import { useAlerts, useAckAlert, useZones, useRooms, useLiveReadings } from "../lib/queries";
 
-type Filter = "all" | "critical" | "warn" | "acked";
+type Filter = "open" | "critical" | "warn" | "acked";
 
 function AlertsScreen() {
-  const [items, setItems] = React.useState(seed);
-  const [filter, setFilter] = React.useState<Filter>("all");
+  useLiveReadings();
+  const all = useAlerts(false);
+  const zones = useZones();
+  const rooms = useRooms();
+  const ack = useAckAlert();
   const navigate = useNavigate();
+  const [filter, setFilter] = React.useState<Filter>("open");
 
+  if (all.isLoading) return <><PageHeader title="Alerts" /><ListSkeleton rows={3} /></>;
+  if (all.error) return <ErrorState title="Failed to load alerts" onRetry={() => all.refetch()} />;
+  const items = all.data ?? [];
+
+  const open = items.filter((a) => a.acknowledgedAt == null);
+  const counts = {
+    open: open.length,
+    critical: open.filter((a) => a.severity === "critical").length,
+    warn: open.filter((a) => a.severity === "warn").length,
+    acked: items.filter((a) => a.acknowledgedAt != null).length,
+  };
   const visible = items.filter((a) => {
-    if (filter === "all") return !a.acknowledged;
-    if (filter === "acked") return a.acknowledged;
-    return !a.acknowledged && a.severity === filter;
+    if (filter === "acked") return a.acknowledgedAt != null;
+    if (filter === "open") return a.acknowledgedAt == null;
+    return a.acknowledgedAt == null && a.severity === filter;
   });
 
-  const counts = {
-    all:      items.filter((a) => !a.acknowledged).length,
-    critical: items.filter((a) => !a.acknowledged && a.severity === "critical").length,
-    warn:     items.filter((a) => !a.acknowledged && a.severity === "warn").length,
-    acked:    items.filter((a) => a.acknowledged).length,
+  const zoneName = (zid: string) => {
+    const z = (zones.data ?? []).find((z) => z.id === zid);
+    const r = (rooms.data ?? []).find((r) => r.id === z?.roomId);
+    return `${r?.name ?? ""} · ${z?.name ?? zid}`;
   };
-
-  const ack = (id: string) =>
-    setItems((xs) => xs.map((a) => (a.id === id ? { ...a, acknowledged: true } : a)));
 
   return (
     <div>
-      <PageHeader
-        title="Alerts"
-        description={counts.all === 0 ? "All clear" : `${counts.all} open · ${counts.critical} critical`}
-      />
-
+      <PageHeader title="Alerts" description={counts.open === 0 ? "All clear" : `${counts.open} open · ${counts.critical} critical`} />
       <div className="flex items-center gap-2 mb-4 flex-wrap">
-        <FilterChip active={filter === "all"}      onClick={() => setFilter("all")}      count={counts.all}>Open</FilterChip>
+        <FilterChip active={filter === "open"} onClick={() => setFilter("open")} count={counts.open}>Open</FilterChip>
         <FilterChip active={filter === "critical"} onClick={() => setFilter("critical")} count={counts.critical}>Critical</FilterChip>
-        <FilterChip active={filter === "warn"}     onClick={() => setFilter("warn")}     count={counts.warn}>Warn</FilterChip>
-        <FilterChip active={filter === "acked"}    onClick={() => setFilter("acked")}    count={counts.acked}>Acked</FilterChip>
+        <FilterChip active={filter === "warn"} onClick={() => setFilter("warn")} count={counts.warn}>Warn</FilterChip>
+        <FilterChip active={filter === "acked"} onClick={() => setFilter("acked")} count={counts.acked}>Acked</FilterChip>
       </div>
 
       {visible.length === 0 ? (
-        <EmptyState
-          icon={<BellOff />}
-          title={filter === "all" ? "No active alerts" : "Nothing here"}
-          description={filter === "all"
-            ? "Sensors are reading inside thresholds. We'll surface anything that drifts."
-            : "Try a different filter to see other alerts."}
-        />
+        <EmptyState icon={<BellOff />} title={filter === "open" ? "No active alerts" : "Nothing here"}
+          description={filter === "open" ? "Sensors are inside thresholds. Anything that drifts shows up here automatically." : "Try a different filter."} />
       ) : (
         <div className="flex flex-col gap-3">
           {visible.map((a) => {
-            const zone = zones.find((z) => z.id === a.zoneId);
-            const room = rooms.find((r) => r.id === zone?.roomId);
+            const agoMin = Math.max(0, Math.round((Date.now() - new Date(a.createdAt).getTime()) / 60000));
             return (
-              <AlertRow
-                key={a.id}
-                metric={a.metric}
-                severity={a.severity}
-                source={`${room?.name ?? ""} · ${zone?.name ?? a.zoneId}`}
-                value={a.value}
-                threshold={a.threshold}
-                agoLabel={`${a.agoMin} min ago`}
-                acknowledged={a.acknowledged}
+              <AlertRow key={a.id} metric={a.metric} severity={a.severity} source={zoneName(a.zoneId)}
+                value={a.value} threshold={a.threshold} agoLabel={`${agoMin} min ago`} acknowledged={a.acknowledgedAt != null}
                 onView={() => navigate({ to: "/zone/$zoneId", params: { zoneId: a.zoneId } })}
-                onAcknowledge={() => ack(a.id)}
-              />
+                onAcknowledge={() => ack.mutate(a.id)} />
             );
           })}
         </div>

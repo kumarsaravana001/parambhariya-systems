@@ -1,0 +1,36 @@
+# Render.com blueprint — one-click deploy of the API with a persistent disk.
+# The web app is hosted on GitHub Pages (demo) or as a Render static site.
+services:
+  - type: web
+    name: parambhariya-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    plan: starter
+    envVars:
+      - key: PORT
+        value: "8787"
+      - key: DATABASE_PATH
+        value: /data/parambhariya.db
+      - key: LOOP_INTERVAL_MS
+        value: "3000"
+    disk:
+      name: api-data
+      mountPath: /data
+      sizeGB: 1
+
+  - type: web
+    name: parambhariya-web
+    runtime: docker
+    dockerfilePath: ./apps/web/Dockerfile
+    dockerContext: .
+    plan: starter
+    envVars:
+      # wired automatically at build time from the API service host — no manual
+      # second deploy needed. Render exposes the host; we prefix the scheme.
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: parambhariya-api
+          property: host

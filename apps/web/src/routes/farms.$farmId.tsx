@@ -1,69 +1,88 @@
+import * as React from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import {
   PageHeader, Breadcrumb, RoomCard, BagCard, MetricCard, Button, EmptyState,
-  Tabs, TabsList, TabsTrigger, TabsContent,
+  Tabs, TabsList, TabsTrigger, TabsContent, DetailSkeleton, ErrorState,
 } from "@parambhariya/ui";
 import { Plus, MapPin, Package, DoorOpen, TriangleAlert } from "lucide-react";
-import { farms, rooms, roomZones, roomAvg, farmBags, farmAlertCount, zones, strains } from "../data/mock";
+import type { Room, Zone, Bag, Strain } from "@parambhariya/types";
+import { useFarm, useRooms, useZones, useBags, useStrains, useAlerts, useCreate } from "../lib/queries";
+import { EntityForm } from "../lib/EntityForm";
 
 function FarmDetail() {
   const { farmId } = Route.useParams();
-  const farm = farms.find((f) => f.id === farmId);
-  if (!farm) throw notFound();
-  const farmRooms = rooms.filter((r) => r.farmId === farm.id);
-  const allBags = farmBags(farm.id);
+  const farm = useFarm(farmId);
+  const rooms = useRooms();
+  const zones = useZones();
+  const bags = useBags();
+  const strains = useStrains();
+  const alerts = useAlerts(true);
+  const createRoom = useCreate<Room>("rooms");
+  const createBag = useCreate<Bag>("bags");
+
+  const [roomOpen, setRoomOpen] = React.useState(false);
+  const [bagOpen, setBagOpen] = React.useState(false);
+
+  if (farm.isLoading || rooms.isLoading || zones.isLoading || bags.isLoading) return <DetailSkeleton />;
+  if (farm.error) return <ErrorState title="Failed to load farm" onRetry={() => farm.refetch()} />;
+  if (rooms.error || zones.error || bags.error) return <ErrorState title="Failed to load farm data" onRetry={() => { rooms.refetch(); zones.refetch(); bags.refetch(); }} />;
+  if (!farm.data) throw notFound();
+
+  const f = farm.data;
+  const farmRooms = (rooms.data ?? []).filter((r) => r.farmId === f.id);
+  const farmZones = (zones.data ?? []).filter((z) => farmRooms.some((r) => r.id === z.roomId));
+  const farmBags = (bags.data ?? []).filter((b) => farmZones.some((z) => z.id === b.zoneId));
+  const farmAlerts = (alerts.data ?? []).filter((a) => farmZones.some((z) => z.id === a.zoneId)).length;
+
+  const zonesOfRoom = (rid: string) => farmZones.filter((z) => z.roomId === rid);
+  const roomAvg = (rid: string) => {
+    const zs = zonesOfRoom(rid);
+    if (!zs.length) return { tempC: undefined, rhPct: undefined, status: "OK" as const };
+    const withReadings = zs.filter((z) => z.tempC != null);
+    const t = withReadings.length ? withReadings.reduce((s, z) => s + (z.tempC ?? 0), 0) / withReadings.length : undefined;
+    const h = withReadings.length ? withReadings.reduce((s, z) => s + (z.rhPct ?? 0), 0) / withReadings.length : undefined;
+    const status = zs.some((z) => z.status === "ALARM") ? "ALARM" : zs.some((z) => z.status === "WARN") ? "WARN" : "OK";
+    return { tempC: t, rhPct: h, status: status as "OK" | "WARN" | "ALARM" };
+  };
 
   return (
     <div>
-      <Breadcrumb
-        className="mb-2"
-        items={[
-          { label: "Farms", href: "/farms" },
-          { label: farm.name },
-        ]}
-      />
+      <Breadcrumb className="mb-2" items={[{ label: "Farms", href: "/farms" }, { label: f.name }]} />
       <PageHeader
-        title={farm.name}
-        description={farm.location}
+        title={f.name}
+        description={f.location}
         actions={
           <>
-            <Button variant="secondary" size="sm"><Plus className="h-4 w-4" /> Add room</Button>
-            <Button variant="primary" size="sm"><Plus className="h-4 w-4" /> Add bag</Button>
+            <Button variant="secondary" size="sm" onClick={() => setRoomOpen(true)}><Plus className="h-4 w-4" /> Add room</Button>
+            <Button variant="primary" size="sm" onClick={() => setBagOpen(true)} disabled={farmZones.length === 0}><Plus className="h-4 w-4" /> Add bag</Button>
           </>
         }
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <MetricCard label="Rooms"        value={farmRooms.length}    icon={<DoorOpen />} />
-        <MetricCard label="Active bags"  value={allBags.filter(b => b.status !== "HARVESTED" && b.status !== "CONTAMINATED").length} icon={<Package />} />
-        <MetricCard label="Open alerts"  value={farmAlertCount(farm.id)} icon={<TriangleAlert />}
-                    tone={farmAlertCount(farm.id) > 0 ? "warn" : "default"} />
-        <MetricCard label="Location"     value={farm.location.split(",")[0] ?? farm.location} icon={<MapPin />} />
+        <MetricCard label="Rooms" value={farmRooms.length} icon={<DoorOpen />} />
+        <MetricCard label="Active bags" value={farmBags.filter((b) => !["HARVESTED", "CONTAMINATED"].includes(b.status)).length} icon={<Package />} />
+        <MetricCard label="Open alerts" value={farmAlerts} icon={<TriangleAlert />} tone={farmAlerts > 0 ? "warn" : "default"} />
+        <MetricCard label="Location" value={f.location.split(",")[0] || "—"} icon={<MapPin />} />
       </div>
 
       <Tabs defaultValue="rooms">
         <TabsList>
           <TabsTrigger value="rooms">Rooms · {farmRooms.length}</TabsTrigger>
-          <TabsTrigger value="bags">Bags · {allBags.length}</TabsTrigger>
+          <TabsTrigger value="bags">Bags · {farmBags.length}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="rooms">
           {farmRooms.length === 0 ? (
-            <EmptyState icon={<DoorOpen />} title="No rooms yet" description="Add a room to start grouping zones and sensors." />
+            <EmptyState icon={<DoorOpen />} title="No rooms yet" description="Add a room to start grouping zones and sensors."
+              action={<Button size="sm" onClick={() => setRoomOpen(true)}><Plus className="h-4 w-4" /> Add room</Button>} />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {farmRooms.map((r) => {
                 const avg = roomAvg(r.id);
                 return (
                   <Link key={r.id} to="/room/$roomId" params={{ roomId: r.id }}>
-                    <RoomCard
-                      name={r.name}
-                      purpose={r.purpose}
-                      zones={roomZones(r.id).length}
-                      tempC={avg.tempC}
-                      rhPct={avg.rhPct}
-                      status={avg.status}
-                    />
+                    <RoomCard name={r.name} purpose={r.purpose} zones={zonesOfRoom(r.id).length} tempC={avg.tempC} rhPct={avg.rhPct} status={avg.status} />
                   </Link>
                 );
               })}
@@ -72,24 +91,16 @@ function FarmDetail() {
         </TabsContent>
 
         <TabsContent value="bags">
-          {allBags.length === 0 ? (
-            <EmptyState icon={<Package />} title="No bags yet" description="Bags will appear here as soon as you inoculate." />
+          {farmBags.length === 0 ? (
+            <EmptyState icon={<Package />} title="No bags yet" description="Bags appear here as soon as you inoculate." />
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {allBags.map((b) => {
-                const z = zones.find((z) => z.id === b.zoneId);
-                const strain = strains.find((s) => s.id === b.strainId);
+              {farmBags.map((b) => {
+                const z = farmZones.find((z) => z.id === b.zoneId);
+                const strain = (strains.data ?? []).find((s) => s.id === b.strainId);
                 return (
                   <Link key={b.id} to="/bag/$bagId" params={{ bagId: b.id }}>
-                    <BagCard
-                      code={b.code}
-                      strain={strain?.name}
-                      zoneName={z?.name}
-                      stage={b.status}
-                      progress={b.stageProgress}
-                      ageDays={b.ageDays}
-                      weightG={b.weightG}
-                    />
+                    <BagCard code={b.code} strain={strain?.name} zoneName={z?.name} stage={b.status} progress={b.stageProgress} weightG={b.weightG ?? undefined} />
                   </Link>
                 );
               })}
@@ -97,6 +108,29 @@ function FarmDetail() {
           )}
         </TabsContent>
       </Tabs>
+
+      <EntityForm
+        open={roomOpen} onOpenChange={setRoomOpen} title="Add room" submitLabel="Add room" busy={createRoom.isPending}
+        fields={[
+          { name: "name", label: "Room name", required: true, placeholder: "Room A-1" },
+          { name: "purpose", label: "Purpose", type: "select", required: true, options: ["Colonization", "Pinning", "Fruiting", "Storage"].map((v) => ({ value: v, label: v })) },
+        ]}
+        initial={{ farmId: f.id }}
+        onSubmit={async (v) => { await createRoom.mutateAsync({ ...v, farmId: f.id }); setRoomOpen(false); }}
+      />
+
+      <EntityForm
+        open={bagOpen} onOpenChange={setBagOpen} title="Add bag" submitLabel="Add bag" busy={createBag.isPending}
+        fields={[
+          { name: "code", label: "Bag code", required: true, placeholder: "AN-0142" },
+          { name: "strainId", label: "Strain", type: "select", required: true, options: (strains.data ?? []).map((s) => ({ value: s.id, label: s.name })) },
+          { name: "zoneId", label: "Zone", type: "select", required: true, options: farmZones.map((z) => ({ value: z.id, label: z.name })) },
+          { name: "status", label: "Stage", type: "select", required: true, options: ["CREATED", "COLONIZING", "PINNING", "FRUITING", "HARVESTED", "CONTAMINATED"].map((v) => ({ value: v, label: v })) },
+          { name: "weightG", label: "Weight (g)", type: "number" },
+        ]}
+        initial={{ status: "CREATED" }}
+        onSubmit={async (v) => { await createBag.mutateAsync(v); setBagOpen(false); }}
+      />
     </div>
   );
 }

@@ -1,84 +1,96 @@
+import * as React from "react";
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import {
-  PageHeader, Breadcrumb, Card, CardTitle, DataList, LifeBadge, LifecycleStepper, Timeline, Button, Progress,
+  PageHeader, Breadcrumb, Card, CardTitle, DataList, LifeBadge, LifecycleStepper, Button, Progress,
+  DetailSkeleton, ErrorState,
 } from "@parambhariya/ui";
 import { Pencil, Trash2 } from "lucide-react";
-import { bags, zones, strains, farms, rooms, bagTimeline } from "../data/mock";
-import { fmtRange } from "../lib/format";
+import type { Bag, LifecycleStage } from "@parambhariya/types";
+import { useBag, useZones, useRooms, useFarm, useStrains, useUpdate, useRemove } from "../lib/queries";
+import { EntityForm } from "../lib/EntityForm";
+import { useNavigate } from "@tanstack/react-router";
 
 function BagDetail() {
   const { bagId } = Route.useParams();
-  const bag = bags.find((b) => b.id === bagId);
-  if (!bag) throw notFound();
-  const zone   = zones.find((z) => z.id === bag.zoneId);
-  const room   = rooms.find((r) => r.id === zone?.roomId);
-  const farm   = farms.find((f) => f.id === room?.farmId);
-  const strain = strains.find((s) => s.id === bag.strainId);
+  const navigate = useNavigate();
+  const bag = useBag(bagId);
+  const zones = useZones();
+  const rooms = useRooms();
+  const strains = useStrains();
+  const update = useUpdate<Bag>("bags");
+  const remove = useRemove("bags");
+  const [editOpen, setEditOpen] = React.useState(false);
+
+  const zone = (zones.data ?? []).find((z) => z.id === bag.data?.zoneId);
+  const room = (rooms.data ?? []).find((r) => r.id === zone?.roomId);
+  const farm = useFarm(room?.farmId);
+
+  if (bag.isLoading) return <DetailSkeleton />;
+  if (bag.error) return <ErrorState title="Failed to load bag" onRetry={() => bag.refetch()} />;
+  if (!bag.data) throw notFound();
+
+  const b = bag.data;
+  const strain = (strains.data ?? []).find((s) => s.id === b.strainId);
+  const isTerminal = b.status === "CONTAMINATED" || b.status === "DISPOSED";
 
   return (
     <div>
-      <Breadcrumb
-        className="mb-2"
-        items={[
-          { label: "Farms", href: "/farms" },
-          { label: farm?.name ?? "Farm", href: `/farms/${room?.farmId}` },
-          { label: room?.name ?? "Room", href: `/room/${room?.id}` },
-          { label: zone?.name ?? "Zone", href: `/zone/${zone?.id}` },
-          { label: bag.code },
-        ]}
-      />
-      <PageHeader
-        title={bag.code}
-        description={`${strain?.name} · ${zone?.name}`}
+      <Breadcrumb className="mb-2" items={[
+        { label: "Farms", href: "/farms" },
+        { label: farm.data?.name ?? "Farm", href: room?.farmId ? `/farms/${room.farmId}` : undefined },
+        { label: room?.name ?? "Room", href: room?.id ? `/room/${room.id}` : undefined },
+        { label: zone?.name ?? "Zone", href: zone?.id ? `/zone/${zone.id}` : undefined },
+        { label: b.code },
+      ]} />
+      <PageHeader title={b.code} description={`${strain?.name ?? ""} · ${zone?.name ?? ""}`}
         actions={
           <>
-            <LifeBadge stage={bag.status} progress={bag.stageProgress} />
-            <Button variant="secondary" size="sm"><Pencil className="h-4 w-4" /> Edit</Button>
-            <Button variant="ghost" size="sm" className="text-danger-fg"><Trash2 className="h-4 w-4" /> Discard</Button>
+            <LifeBadge stage={b.status} progress={b.stageProgress} />
+            <Button variant="secondary" size="sm" onClick={() => setEditOpen(true)}><Pencil className="h-4 w-4" /> Edit</Button>
+            <Button variant="ghost" size="sm" className="text-danger-fg" onClick={async () => { await remove.mutateAsync(b.id); navigate({ to: "/farms" }); }}>
+              <Trash2 className="h-4 w-4" /> Discard
+            </Button>
           </>
-        }
-      />
+        } />
 
       <Card padding="lg" className="mb-6">
         <CardTitle className="mb-4">Lifecycle</CardTitle>
-        <LifecycleStepper current={bag.status} intraProgress={bag.stageProgress} />
-        {bag.status !== "CONTAMINATED" && bag.status !== "DISPOSED" && (
+        <LifecycleStepper current={b.status} intraProgress={b.stageProgress} />
+        {!isTerminal && (
           <div className="mt-6 flex flex-col gap-1.5">
             <div className="flex items-center justify-between text-xs text-text-muted">
-              <span className="uppercase tracking-[0.06em] font-semibold">{bag.status} progress</span>
-              <span className="font-mono">{Math.round(bag.stageProgress * 100)} %</span>
+              <span className="uppercase tracking-[0.06em] font-semibold">{b.status} progress</span>
+              <span className="font-mono">{Math.round(b.stageProgress * 100)} %</span>
             </div>
-            <Progress value={bag.stageProgress * 100} stage={bag.status} />
+            <Progress value={b.stageProgress * 100} stage={b.status} />
           </div>
         )}
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card padding="lg">
-          <CardTitle className="mb-4">Details</CardTitle>
-          <DataList
-            layout="inline"
-            items={[
-              { label: "Strain",     value: strain?.name ?? "—" },
-              { label: "Scientific", value: strain?.scientific ?? "—" },
-              { label: "Zone",       value: <Link to="/zone/$zoneId" params={{ zoneId: zone?.id ?? "" }} className="text-brand-700 hover:underline">{zone?.name}</Link> },
-              { label: "Room",       value: <Link to="/room/$roomId" params={{ roomId: room?.id ?? "" }} className="text-brand-700 hover:underline">{room?.name}</Link> },
-              { label: "Farm",       value: farm?.name ?? "—" },
-              { label: "Created",    value: bag.createdISO, mono: true },
-              { label: "Age",        value: `${bag.ageDays} days`, mono: true },
-              { label: "Weight",     value: bag.weightG ? `${bag.weightG} g` : "—", mono: true },
-              { label: "Cycle est.", value: strain ? `${strain.cycleDays} days` : "—", mono: true },
-              { label: "Optimal T",  value: strain ? fmtRange(strain.optimalTempC, "°C") : "—", mono: true },
-              { label: "Optimal RH", value: strain ? fmtRange(strain.optimalRhPct, "%")  : "—", mono: true },
-            ]}
-          />
-        </Card>
+      <Card padding="lg">
+        <CardTitle className="mb-4">Details</CardTitle>
+        <DataList layout="inline" items={[
+          { label: "Strain", value: strain?.name ?? "—" },
+          { label: "Scientific", value: strain?.scientific ?? "—" },
+          { label: "Zone", value: <Link to="/zone/$zoneId" params={{ zoneId: zone?.id ?? "" }} className="text-brand-700 hover:underline">{zone?.name}</Link> },
+          { label: "Created", value: b.createdAt.slice(0, 10), mono: true },
+          { label: "Stage", value: b.status, mono: true },
+          { label: "Weight", value: b.weightG ? `${b.weightG} g` : "—", mono: true },
+          { label: "Cycle est.", value: strain ? `${strain.cycleDays} days` : "—", mono: true },
+        ]} />
+      </Card>
 
-        <Card padding="lg">
-          <CardTitle className="mb-4">History</CardTitle>
-          <Timeline events={bagTimeline(bag.id)} />
-        </Card>
-      </div>
+      <EntityForm
+        open={editOpen} onOpenChange={setEditOpen} title={`Edit ${b.code}`} submitLabel="Save changes" busy={update.isPending}
+        initial={{ status: b.status, stageProgress: b.stageProgress, weightG: b.weightG ?? "", zoneId: b.zoneId }}
+        fields={[
+          { name: "status", label: "Stage", type: "select", required: true, options: ["CREATED", "COLONIZING", "PINNING", "FRUITING", "HARVESTED", "CONTAMINATED", "DISPOSED"].map((v) => ({ value: v, label: v })) },
+          { name: "stageProgress", label: "Stage progress (0–1)", type: "number", step: 0.05, min: 0, max: 1 },
+          { name: "zoneId", label: "Zone", type: "select", options: (zones.data ?? []).map((z) => ({ value: z.id, label: z.name })) },
+          { name: "weightG", label: "Weight (g)", type: "number" },
+        ]}
+        onSubmit={async (v) => { await update.mutateAsync({ id: b.id, body: v }); setEditOpen(false); }}
+      />
     </div>
   );
 }

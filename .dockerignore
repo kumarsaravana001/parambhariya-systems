@@ -1,0 +1,15 @@
+**/node_modules
+**/dist
+**/.vite
+**/.turbo
+**/.cache
+apps/api/data
+*.db
+*.db-wal
+*.db-shm
+.git
+.github
+ios
+android
+**/*.log
+.DS_Store

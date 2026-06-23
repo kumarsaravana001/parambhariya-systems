@@ -1,65 +1,49 @@
 # Parambhariya Systems
 
-Multi-tenant IoT precision-agriculture platform. Web dashboard for farm operators, wrapped as a PWA + Capacitor for iOS/Android.
+Production-ready monitoring platform for Parambhariya mushroom cultivation — live environment monitoring, backend-driven temperature/humidity/CO₂ control, full lifecycle tracking (farm → room → zone → bag), and an internal lab portal for microbial cultures.
 
 ```
 apps/
-  web/         # Vite + React 19 + TanStack Router + Tailwind 4 + Capacitor
+  api/         Hono + Drizzle + SQLite backend — REST CRUD, SSE live readings,
+               temperature CONTROL LOOP with per-zone setpoints, alerts, seed
+  web/         Vite + React 19 + TanStack Router + Tailwind 4 + Capacitor SPA
 libs/
-  ui/          # @parambhariya/ui — tokens, primitives, patterns, layout, theme
+  types/       @parambhariya/types — Zod schemas + TS types shared by api & web
+  ui/          @parambhariya/ui — design system (tokens, ~50 primitives/patterns)
 ```
 
 ## Quick start
-
 ```sh
 pnpm install
-pnpm dev            # runs apps/web on http://localhost:5173
-pnpm build          # builds all packages
-pnpm typecheck      # tsc across the workspace
+pnpm dev:full        # API on :8787, web on :5173
+pnpm test            # 31 tests (api control loop + CRUD, web data layer + forms)
+pnpm typecheck       # all packages
+pnpm build           # all packages
 ```
+- `apps/web/.env.local` → `VITE_API_URL=http://localhost:8787` to use the real backend.
+- Without `VITE_API_URL`, the web app uses a **browser-persistent demo driver** (localStorage + a client-side control simulator) — fully dynamic and live with no server. That's how the public GitHub Pages demo runs.
 
-## Mobile (Capacitor)
+## How it works
 
-```sh
-pnpm --filter @parambhariya/web cap:add:ios
-pnpm --filter @parambhariya/web cap:add:android
-pnpm ios            # build web, sync, open Xcode
-pnpm android        # build web, sync, open Android Studio
-```
+**Everything is dynamic.** Every list reads from a data layer; every entity (farms, rooms, zones, bags, strains, cultures, storage, categories, custom fields) has create / edit / delete forms. Server state is managed by TanStack Query with cache invalidation.
 
-## What's in `libs/ui`
+**Temperature control is backend-driven.** Each zone holds a setpoint (temp / humidity / CO₂). A control loop (`apps/api/src/control.ts` + `loop.ts`) drives each measured value toward its setpoint every tick, persists a time-series reading, and raises/auto-resolves alerts on deviation. The UI's setpoint sliders `PATCH /zones/:id/setpoint`; readings stream live over Server-Sent Events. `stepZone` is the simulation driver — the one seam where a real edge-device driver drops in.
 
-- **tokens.css** — single source of truth (brand, surfaces, lifecycle palette, status, type scale, spacing, radii, shadows, z-index, motion, touch).
-- **primitives** — Button, Card, Badge, Input, Label, Textarea, Select, Alert, Dialog, IconButton, Skeleton, Breadcrumb, VisuallyHidden.
-- **patterns** — FormField, PageHeader, EmptyState, ErrorState, ConfirmDialog, MetricCard, DataList, ListSkeleton, DetailSkeleton.
-- **layout** — AppShell, TopBar, Sidebar (desktop-only, 224px), BottomNav (mobile-only), Brand.
-- **theme** — `applyTenantTheme(id)` rewrites `--brand-*` at runtime; `applyColorScheme("light" | "dark")` flips `data-theme`. Two presets: `mushroomai` (green) and `aquafarm` (blue).
+**Two drivers, one UI.** `apps/web/src/lib/driver.ts` picks the HTTP driver (real API) or the localStorage driver (demo) at runtime by `VITE_API_URL`. Both implement the same `Driver` interface and the same control law.
 
-Components are TS-strict, `forwardRef`, Radix-headless where keyboard/aria correctness matters (Dialog, Select, Label).
+## Live demo
+**https://kumarsaravana001.github.io/parambhariya-systems/** (runs the browser demo driver — dynamic + live, no backend).
 
-## Design contract
+## Deploy
+See [DEPLOY.md](./DEPLOY.md). API → Docker / Fly.io (`apps/api/fly.toml`, Chennai region) / Render (`render.yaml`) with a persistent SQLite volume; web → GitHub Pages or any static host / nginx (`apps/web/Dockerfile`). `docker compose up --build` runs both. CI (`.github/workflows/ci.yml`) runs typecheck + tests + build + an API image build on every push.
 
-See [DECISIONS.md](./DECISIONS.md) for the spec → code map and intentional deviations.
-
-- Focus is keyboard-visible only (`focus-visible:ring-2`).
-- Touch targets ≥ 44px on coarse pointers (`--touch-min`).
-- Critical sensor alerts render as full-width banners and **must not** be dismissible by tap-elsewhere.
-- Lifecycle status (CREATED / COLONIZING / PINNING / FRUITING / HARVESTED / CONTAMINATED) renders verbatim in `Badge` — domain enum, not localized.
-- Numbers pair value + unit with a space: `26.3 °C`. Em-dash `—` is "no reading."
-- Brand color is runtime-mutable — never hardcode hex; use `bg-brand-*`.
+## Design system
+See [DESIGN.md](./DESIGN.md) — the locked Parambhariya visual system (tokens are law). `/components` in the app is a live gallery of every primitive and pattern. Lab portal ideas captured in [docs/CBM-LAB-PORTAL.md](./docs/CBM-LAB-PORTAL.md).
 
 ## Screens
+Operations dashboard (live KPIs + fleet + alerts + pipeline) · Farms / Rooms / Zones / Bags (CRUD + live + setpoint control) · Strains · Alerts · Reports · Flows (kanban) · Lab Portal (cultures, storage tree, categories, custom fields, audit) · Components gallery · Settings.
 
-| Route                | Screen                            |
-|----------------------|-----------------------------------|
-| `/` or `/login`      | LoginScreen                       |
-| `/dashboard`         | Today overview, zones, recent bags|
-| `/farms`             | Farm list                         |
-| `/farms/:farmId`     | Farm detail (zones + bags)        |
-| `/zone/:zoneId`      | Zone live readings                |
-| `/bag/:bagId`        | Bag lifecycle + details           |
-| `/strains`           | Strain catalog                    |
-| `/alerts`            | Active alerts + ack               |
-| `/reports`           | Production rollup                 |
-| `/flows`             | Kanban-style lifecycle pipeline   |
-| `/settings`          | Tenant + theme switcher           |
+## Honest production notes
+- SQLite + a mounted volume is genuinely production-grade for this single-node internal tool; swap the Drizzle driver to Postgres/Turso to scale out (repos/routes unchanged).
+- The control loop simulates the actuator. Wiring real sensors/actuators is the `stepZone` seam; persistence, alerts, SSE, and UI stay the same.
+- No auth yet — put the API behind your network or add a token middleware before exposing it.

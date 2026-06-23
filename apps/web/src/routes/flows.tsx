@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHeader, KanbanColumn, BagCard, LifeBadge, LIFECYCLE_ORDER, ListSkeleton, ErrorState } from "@parambhariya/ui";
 import { useBags, useStrains, useZones } from "../lib/queries";
+import { SectionHelp } from "../lib/SectionHelp";
 
 function FlowsScreen() {
   const bags = useBags();
@@ -14,6 +15,10 @@ function FlowsScreen() {
   return (
     <div>
       <PageHeader title="Flows" description="Bag pipeline by lifecycle stage." />
+      <SectionHelp id="flows" items={[
+        { label: "What this is", body: "Every fruiting bag laid out by lifecycle stage — Created → Colonizing → Pinning → Fruiting → Harvested." },
+        { label: "How to use", body: "Scan the columns to see where your crop is bunched up. Click any bag to update its stage, weight, or flush count." },
+      ]} />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         {LIFECYCLE_ORDER.map((stage) => {
           const items = list.filter((b) => b.status === stage);

@@ -39,6 +39,8 @@ export const useRooms = () => useList<Room>("rooms");
 export const useZones = () => useList<Zone>("zones");
 export const useBags = () => useList<Bag>("bags");
 export const useStrains = () => useList<Strain>("strains");
+export const useSpawn = () => useList<import("@parambhariya/types").SpawnBatch>("spawn");
+export const useSpawnBatch = (id?: string) => useItem<import("@parambhariya/types").SpawnBatch>("spawn", id);
 export const useCultures = () => useList<Culture>("cultures");
 export const useStorage = () => useList<StorageLocation>("storage");
 export const useCategories = () => useList<Category>("categories");

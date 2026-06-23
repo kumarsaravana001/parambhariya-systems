@@ -19,9 +19,11 @@ import { Route as DashboardRouteImport } from "./routes/dashboard";
 import { Route as ComponentsRouteImport } from "./routes/components";
 import { Route as AlertsRouteImport } from "./routes/alerts";
 import { Route as IndexRouteImport } from "./routes/index";
+import { Route as SpawnIndexRouteImport } from "./routes/spawn.index";
 import { Route as LabIndexRouteImport } from "./routes/lab.index";
 import { Route as FarmsIndexRouteImport } from "./routes/farms.index";
 import { Route as ZoneZoneIdRouteImport } from "./routes/zone.$zoneId";
+import { Route as SpawnBatchIdRouteImport } from "./routes/spawn.$batchId";
 import { Route as RoomRoomIdRouteImport } from "./routes/room.$roomId";
 import { Route as LabStorageRouteImport } from "./routes/lab.storage";
 import { Route as LabSecurityRouteImport } from "./routes/lab.security";
@@ -83,6 +85,11 @@ const IndexRoute = IndexRouteImport.update({
   path: "/",
   getParentRoute: () => rootRouteImport,
 } as any);
+const SpawnIndexRoute = SpawnIndexRouteImport.update({
+  id: "/spawn/",
+  path: "/spawn/",
+  getParentRoute: () => rootRouteImport,
+} as any);
 const LabIndexRoute = LabIndexRouteImport.update({
   id: "/",
   path: "/",
@@ -96,6 +103,11 @@ const FarmsIndexRoute = FarmsIndexRouteImport.update({
 const ZoneZoneIdRoute = ZoneZoneIdRouteImport.update({
   id: "/zone/$zoneId",
   path: "/zone/$zoneId",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const SpawnBatchIdRoute = SpawnBatchIdRouteImport.update({
+  id: "/spawn/$batchId",
+  path: "/spawn/$batchId",
   getParentRoute: () => rootRouteImport,
 } as any);
 const RoomRoomIdRoute = RoomRoomIdRouteImport.update({
@@ -170,9 +182,11 @@ export interface FileRoutesByFullPath {
   "/lab/security": typeof LabSecurityRoute;
   "/lab/storage": typeof LabStorageRoute;
   "/room/$roomId": typeof RoomRoomIdRoute;
+  "/spawn/$batchId": typeof SpawnBatchIdRoute;
   "/zone/$zoneId": typeof ZoneZoneIdRoute;
   "/farms/": typeof FarmsIndexRoute;
   "/lab/": typeof LabIndexRoute;
+  "/spawn/": typeof SpawnIndexRoute;
 }
 export interface FileRoutesByTo {
   "/": typeof IndexRoute;
@@ -194,9 +208,11 @@ export interface FileRoutesByTo {
   "/lab/security": typeof LabSecurityRoute;
   "/lab/storage": typeof LabStorageRoute;
   "/room/$roomId": typeof RoomRoomIdRoute;
+  "/spawn/$batchId": typeof SpawnBatchIdRoute;
   "/zone/$zoneId": typeof ZoneZoneIdRoute;
   "/farms": typeof FarmsIndexRoute;
   "/lab": typeof LabIndexRoute;
+  "/spawn": typeof SpawnIndexRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
@@ -220,9 +236,11 @@ export interface FileRoutesById {
   "/lab/security": typeof LabSecurityRoute;
   "/lab/storage": typeof LabStorageRoute;
   "/room/$roomId": typeof RoomRoomIdRoute;
+  "/spawn/$batchId": typeof SpawnBatchIdRoute;
   "/zone/$zoneId": typeof ZoneZoneIdRoute;
   "/farms/": typeof FarmsIndexRoute;
   "/lab/": typeof LabIndexRoute;
+  "/spawn/": typeof SpawnIndexRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
@@ -247,9 +265,11 @@ export interface FileRouteTypes {
     | "/lab/security"
     | "/lab/storage"
     | "/room/$roomId"
+    | "/spawn/$batchId"
     | "/zone/$zoneId"
     | "/farms/"
-    | "/lab/";
+    | "/lab/"
+    | "/spawn/";
   fileRoutesByTo: FileRoutesByTo;
   to:
     | "/"
@@ -271,9 +291,11 @@ export interface FileRouteTypes {
     | "/lab/security"
     | "/lab/storage"
     | "/room/$roomId"
+    | "/spawn/$batchId"
     | "/zone/$zoneId"
     | "/farms"
-    | "/lab";
+    | "/lab"
+    | "/spawn";
   id:
     | "__root__"
     | "/"
@@ -296,9 +318,11 @@ export interface FileRouteTypes {
     | "/lab/security"
     | "/lab/storage"
     | "/room/$roomId"
+    | "/spawn/$batchId"
     | "/zone/$zoneId"
     | "/farms/"
-    | "/lab/";
+    | "/lab/"
+    | "/spawn/";
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
@@ -315,8 +339,10 @@ export interface RootRouteChildren {
   BagBagIdRoute: typeof BagBagIdRoute;
   FarmsFarmIdRoute: typeof FarmsFarmIdRoute;
   RoomRoomIdRoute: typeof RoomRoomIdRoute;
+  SpawnBatchIdRoute: typeof SpawnBatchIdRoute;
   ZoneZoneIdRoute: typeof ZoneZoneIdRoute;
   FarmsIndexRoute: typeof FarmsIndexRoute;
+  SpawnIndexRoute: typeof SpawnIndexRoute;
 }
 
 declare module "@tanstack/react-router" {
@@ -391,6 +417,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof IndexRouteImport;
       parentRoute: typeof rootRouteImport;
     };
+    "/spawn/": {
+      id: "/spawn/";
+      path: "/spawn";
+      fullPath: "/spawn/";
+      preLoaderRoute: typeof SpawnIndexRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     "/lab/": {
       id: "/lab/";
       path: "/";
@@ -410,6 +443,13 @@ declare module "@tanstack/react-router" {
       path: "/zone/$zoneId";
       fullPath: "/zone/$zoneId";
       preLoaderRoute: typeof ZoneZoneIdRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/spawn/$batchId": {
+      id: "/spawn/$batchId";
+      path: "/spawn/$batchId";
+      fullPath: "/spawn/$batchId";
+      preLoaderRoute: typeof SpawnBatchIdRouteImport;
       parentRoute: typeof rootRouteImport;
     };
     "/room/$roomId": {
@@ -523,8 +563,10 @@ const rootRouteChildren: RootRouteChildren = {
   BagBagIdRoute: BagBagIdRoute,
   FarmsFarmIdRoute: FarmsFarmIdRoute,
   RoomRoomIdRoute: RoomRoomIdRoute,
+  SpawnBatchIdRoute: SpawnBatchIdRoute,
   ZoneZoneIdRoute: ZoneZoneIdRoute,
   FarmsIndexRoute: FarmsIndexRoute,
+  SpawnIndexRoute: SpawnIndexRoute,
 };
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

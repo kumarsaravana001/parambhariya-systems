@@ -73,6 +73,25 @@ export const bags = sqliteTable("bags", {
   createdAt: text("created_at").notNull(),
 });
 
+export const spawnBatches = sqliteTable("spawn_batches", {
+  id: text("id").primaryKey(),
+  code: text("code").notNull(),
+  label: text("label").notNull().default(""),
+  strainId: text("strain_id").notNull(),
+  stage: text("stage").notNull(),
+  parentId: text("parent_id"),
+  substrate: text("substrate").notNull().default(""),
+  container: text("container").notNull().default(""),
+  quantity: integer("quantity").notNull().default(0),
+  zoneId: text("zone_id"),
+  inoculatedOn: text("inoculated_on").notNull().default(""),
+  expectedColonizationDays: integer("expected_colonization_days").notNull().default(12),
+  status: text("status").notNull().default("INOCULATED"),
+  buyer: text("buyer").notNull().default(""),
+  notes: text("notes").notNull().default(""),
+  createdAt: text("created_at").notNull(),
+});
+
 export const readings = sqliteTable("readings", {
   id: text("id").primaryKey(),
   zoneId: text("zone_id").notNull(),

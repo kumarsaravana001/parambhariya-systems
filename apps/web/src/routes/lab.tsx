@@ -1,12 +1,13 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import {
   FlaskConical, Database, FolderTree, Download,
-  SlidersHorizontal, ScrollText, ShieldCheck, LayoutDashboard,
+  SlidersHorizontal, ScrollText, ShieldCheck, LayoutDashboard, TestTubes,
 } from "lucide-react";
 
 const SUBNAV = [
   { label: "Dashboard",     href: "/lab",               icon: <LayoutDashboard />, exact: true },
   { label: "Cultures",      href: "/lab/cultures",      icon: <FlaskConical /> },
+  { label: "Spawn →",       href: "/spawn",             icon: <TestTubes /> },
   { label: "Storage",       href: "/lab/storage",       icon: <Database /> },
   { label: "Categories",    href: "/lab/categories",    icon: <FolderTree /> },
   { label: "Data & Backup", href: "/lab/data",          icon: <Download /> },

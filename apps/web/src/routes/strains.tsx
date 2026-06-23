@@ -7,6 +7,7 @@ import { Plus, Dna, Pencil, Trash2 } from "lucide-react";
 import type { Strain } from "@parambhariya/types";
 import { useStrains, useCreate, useUpdate, useRemove } from "../lib/queries";
 import { EntityForm } from "../lib/EntityForm";
+import { SectionHelp } from "../lib/SectionHelp";
 
 const fields = [
   { name: "name", label: "Name", required: true, placeholder: "Pearl Oyster" },
@@ -41,6 +42,11 @@ function StrainsScreen() {
     <div>
       <PageHeader title="Strain Catalog" description="Optimal ranges and cycle durations for every strain you grow."
         actions={<Button variant="primary" size="sm" onClick={() => { setEditing(null); setFormOpen(true); }}><Plus className="h-4 w-4" /> Add strain</Button>} />
+      <SectionHelp id="strains" items={[
+        { label: "What this is", body: "Your strain library — the climate optimum and cycle timing for each mushroom you grow." },
+        { label: "Why it matters", body: "Optimal temperature and colonization/fruiting days here feed the Spawn ready-date predictor and the dashboard Inoculation Planner." },
+        { label: "Tip", body: "Set colonization days realistically (Oyster ~12–14d grain spawn, Shiitake ~45–60d block) so the climate-adjusted ETAs are accurate." },
+      ]} />
 
       {list.length === 0 ? (
         <EmptyState icon={<Dna />} title="No strains yet" description="Add a strain to track its optimal climate and cycle."

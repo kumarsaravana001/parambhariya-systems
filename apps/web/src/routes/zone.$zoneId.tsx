@@ -11,6 +11,7 @@ import {
   useZoneReadings, useSetSetpoint, useLiveReadings, driverMode,
 } from "../lib/queries";
 import { fmtAgo, bandTone } from "../lib/format";
+import { SectionHelp } from "../lib/SectionHelp";
 
 function SetpointRow({ label, unit, value, min, max, step, onCommit }: {
   label: string; unit: string; value: number; min: number; max: number; step: number; onCommit: (v: number) => void;
@@ -73,6 +74,12 @@ function ZoneDetail() {
           z.deviceId,
         ].filter(Boolean).join(" · ")}
         actions={<Tag tone={driverMode === "api" ? "success" : "info"} size="sm">{driverMode === "api" ? "● Live (API)" : "● Live (demo)"}</Tag>} />
+
+      <SectionHelp id="zone" items={[
+        { label: "Live readings", body: "The four tiles stream live temperature, humidity, CO₂ and light, with a sparkline trend and 'last reading' age." },
+        { label: "Environment control", body: "Drag a setpoint slider — it's sent to the backend controller, which drives the reading toward your target and raises an alert if it can't hold it." },
+        { label: "Why temperature matters", body: "Colonization speed depends on temperature. Holding the right setpoint here is what makes the Spawn ready-dates accurate." },
+      ]} />
 
       {zoneAlerts.length > 0 && (
         <div className="flex flex-col gap-3 mb-6">

@@ -13,22 +13,31 @@ import { seedData } from "./seed-data";
  * driver is the real path; this is the offline twin.
  */
 
-const KEY = "parambhariya.db.v2"; // bump on schema change → reseeds with new fields
+const KEY = "parambhariya.db.v4"; // bump on schema change → reseeds with new fields
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
 const nowISO = () => new Date().toISOString();
 
 type Tables = {
-  farms: any[]; rooms: any[]; zones: any[]; bags: any[]; strains: any[];
+  farms: any[]; rooms: any[]; zones: any[]; bags: any[]; strains: any[]; spawn: any[];
   cultures: any[]; storage: any[]; "custom-fields": any[]; categories: any[];
   readings: Reading[]; alerts: Alert[]; audit: AuditEntry[];
 };
 
 function load(): Tables {
+  const seeded = seedData();
   try {
     const raw = localStorage.getItem(KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const stored = JSON.parse(raw);
+      // backfill any tables added since this store was written (e.g. spawn)
+      let changed = false;
+      for (const k of Object.keys(seeded) as (keyof Tables)[]) {
+        if (stored[k] === undefined) { stored[k] = (seeded as any)[k]; changed = true; }
+      }
+      if (changed) persist(stored);
+      return stored;
+    }
   } catch {}
-  const seeded = seedData();
   persist(seeded);
   return seeded;
 }
@@ -109,13 +118,18 @@ function audit(table: string, action: AuditEntry["action"], detail: string) {
 }
 const labelOf = (row: any) => row.name ?? row.code ?? row.label ?? row.id;
 const tableName: Record<Resource, string> = {
-  farms: "Farms", rooms: "Rooms", zones: "Zones", bags: "Bags", strains: "Strains",
+  farms: "Farms", rooms: "Rooms", zones: "Zones", bags: "Bags", strains: "Strains", spawn: "Spawn",
   cultures: "Cultures", storage: "Storage", categories: "Categories", "custom-fields": "Custom Fields",
 };
 
 export function localDriver(): Driver {
   ensureLoop();
-  const tbl = (r: Resource) => (db() as any)[r] as any[];
+  // never return undefined for a table the stored DB predates (new resource added)
+  const tbl = (r: Resource) => {
+    const d = db() as any;
+    if (!Array.isArray(d[r])) { d[r] = []; save(); }
+    return d[r] as any[];
+  };
 
   return {
     mode: "local",
@@ -123,8 +137,7 @@ export function localDriver(): Driver {
     async get(r, id) { const x = tbl(r).find((e) => e.id === id); if (!x) throw new Error("Not found"); return structuredClone(x); },
     async create(r, body) {
       const row: any = { id: uid(), ...defaultsFor(r), ...body };
-      if (r === "bags") row.createdAt = nowISO();
-      if (r === "cultures") row.createdAt = nowISO();
+      if (r === "bags" || r === "cultures" || r === "spawn") row.createdAt = nowISO();
       if (r === "zones") Object.assign(row, { tempC: null, rhPct: null, co2Ppm: null, lightLux: null, status: "OK", updatedAt: null });
       tbl(r).push(row); audit(tableName[r], "Created", labelOf(row)); save();
       return structuredClone(row);
@@ -174,6 +187,7 @@ function defaultsFor(r: Resource): Record<string, any> {
     case "rooms": return { sizeSqM: 0, bagCapacity: 0, rackCount: 0, notes: "" };
     case "zones": return { bagCapacity: 0, deviceId: "", setpointTempC: 24, setpointRhPct: 88, setpointCo2Ppm: 1000 };
     case "bags": return { stageProgress: 0, weightG: null, substrate: "", substrateWeightKg: 0, inoculatedOn: "", expectedHarvest: "", flushCount: 0, notes: "" };
+    case "spawn": return { label: "", parentId: null, substrate: "", container: "", quantity: 0, zoneId: null, status: "INOCULATED", buyer: "", notes: "", expectedColonizationDays: 12 };
     case "cultures": return { contaminated: false, gen: 1, stock: 0, storageId: null, categoryId: null, intervalDays: 15, nextTransfer: null, commonName: "", strainCode: "" };
     case "storage": return { parentId: null, tempRange: "" };
     case "categories": return { parentId: null };

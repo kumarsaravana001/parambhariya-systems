@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { PageHeader, EmptyState, FilterChip, AlertRow, ListSkeleton, ErrorState } from "@parambhariya/ui";
 import { BellOff } from "lucide-react";
 import { useAlerts, useAckAlert, useZones, useRooms, useLiveReadings } from "../lib/queries";
+import { SectionHelp } from "../lib/SectionHelp";
 
 type Filter = "open" | "critical" | "warn" | "acked";
 
@@ -41,6 +42,11 @@ function AlertsScreen() {
   return (
     <div>
       <PageHeader title="Alerts" description={counts.open === 0 ? "All clear" : `${counts.open} open · ${counts.critical} critical`} />
+      <SectionHelp id="alerts" items={[
+        { label: "What this is", body: "Every time a zone drifts off its setpoint, the controller raises an alert here automatically — warn for small drift, critical for large." },
+        { label: "Acknowledge", body: "Click Acknowledge to clear an alert you've handled. Alerts also auto-resolve once the controller pulls the zone back into spec." },
+        { label: "Filter", body: "Use the chips to focus on critical-only or review acknowledged history." },
+      ]} />
       <div className="flex items-center gap-2 mb-4 flex-wrap">
         <FilterChip active={filter === "open"} onClick={() => setFilter("open")} count={counts.open}>Open</FilterChip>
         <FilterChip active={filter === "critical"} onClick={() => setFilter("critical")} count={counts.critical}>Critical</FilterChip>

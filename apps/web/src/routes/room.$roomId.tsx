@@ -9,6 +9,7 @@ import { LayoutGrid, Package, Plus, Thermometer, Droplets } from "lucide-react";
 import type { Zone } from "@parambhariya/types";
 import { useRoom, useFarm, useZones, useBags, useStrains, useCreate, useLiveReadings } from "../lib/queries";
 import { EntityForm } from "../lib/EntityForm";
+import { useSettings } from "../lib/settings";
 
 function RoomDetail() {
   const { roomId } = Route.useParams();
@@ -19,6 +20,7 @@ function RoomDetail() {
   const bags = useBags();
   const strains = useStrains();
   const createZone = useCreate<Zone>("zones");
+  const { settings } = useSettings();
   const [zoneOpen, setZoneOpen] = React.useState(false);
 
   if (room.isLoading) return <DetailSkeleton />;
@@ -113,7 +115,7 @@ function RoomDetail() {
           { name: "setpointRhPct", label: "Humidity setpoint (%)", type: "number", step: 1, min: 0, max: 100 },
           { name: "setpointCo2Ppm", label: "CO₂ setpoint (ppm)", type: "number", step: 50, min: 0, max: 5000 },
         ]}
-        initial={{ roomId: r.id, bagCapacity: 0, deviceId: "", setpointTempC: 24, setpointRhPct: 88, setpointCo2Ppm: 1000 }}
+        initial={{ roomId: r.id, bagCapacity: 0, deviceId: "", setpointTempC: settings.climate.tempC, setpointRhPct: settings.climate.rhPct, setpointCo2Ppm: settings.climate.co2Ppm }}
         onSubmit={async (v) => { await createZone.mutateAsync({ ...v, roomId: r.id }); setZoneOpen(false); }}
       />
     </div>

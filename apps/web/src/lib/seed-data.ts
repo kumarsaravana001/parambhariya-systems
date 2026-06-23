@@ -63,8 +63,17 @@ export function seedData() {
     { id: uid(), label: "Substrate", type: "Dropdown", required: true },
   ];
 
+  // Spawn production lineage: Culture A (MC) → Culture B (G1) → Culture A·A (F1)
+  const mcId = uid(), g1Id = uid(), f1Id = uid();
+  const spawn = [
+    { id: mcId, code: "MC-OYS-001", label: "Culture A", strainId: "s-pleurotus", stage: "MOTHER_CULTURE", parentId: null, substrate: "PDA agar", container: "Petri dish", quantity: 6, zoneId: "z-a1-c1", age: 6, expectedColonizationDays: 8, status: "COLONIZING", buyer: "", notes: "", createdAt: iso(6) },
+    { id: g1Id, code: "G1-OYS-014", label: "Culture B", strainId: "s-pleurotus", stage: "GRAIN_G1", parentId: mcId, substrate: "Sorghum grain", container: "1 L jar", quantity: 10, zoneId: "z-a1-c1", age: 4, expectedColonizationDays: 12, status: "COLONIZING", buyer: "", notes: "", createdAt: iso(4) },
+    { id: f1Id, code: "F1-OYS-031", label: "Culture A·A", strainId: "s-pleurotus", stage: "SUBSTRATE_F1", parentId: g1Id, substrate: "Supplemented sawdust", container: "Spawn bag", quantity: 40, zoneId: "z-a2-f1", age: 2, expectedColonizationDays: 16, status: "COLONIZING", buyer: "FarmFresh Coimbatore", notes: "", createdAt: iso(2) },
+    { id: uid(), code: "SM-SHI-002", label: "Shiitake master", strainId: "s-lentinula", stage: "SPAWN_MASTER", parentId: null, substrate: "Hardwood sawdust", container: "Spawn bag", quantity: 25, zoneId: "z-p1-c1", age: 20, expectedColonizationDays: 45, status: "COLONIZING", buyer: "", notes: "", createdAt: iso(20) },
+  ].map((s) => ({ ...s, inoculatedOn: iso(s.age).slice(0, 10) }));
+
   return {
-    strains, farms, rooms, zones, bags,
+    strains, farms, rooms, zones, bags, spawn,
     cultures, storage, categories, "custom-fields": customFields,
     readings: [], alerts: [], audit: [],
   };

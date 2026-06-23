@@ -8,6 +8,13 @@ import { Sprout, Plus, Pencil, Trash2 } from "lucide-react";
 import type { Farm, Room, Bag, Zone } from "@parambhariya/types";
 import { useFarms, useRooms, useBags, useZones, useAlerts, useCreate, useUpdate, useRemove } from "../lib/queries";
 import { EntityForm } from "../lib/EntityForm";
+import { SectionHelp } from "../lib/SectionHelp";
+
+const HELP = [
+  { label: "What this is", body: "Your farms — each holds rooms → zones → bags. Capacity and area let you track how full each site is." },
+  { label: "Add a farm", body: "Click Create farm and fill in area (m²), total bag capacity, manager and contact. Capacity drives the utilization bar on the farm page." },
+  { label: "Edit / delete", body: "Hover a farm card to edit or remove it. Open a farm to manage its rooms and bags." },
+];
 
 function FarmsScreen() {
   const farms = useFarms();
@@ -49,6 +56,7 @@ function FarmsScreen() {
         title="Your Farms"
         actions={<Button variant="primary" size="sm" onClick={openCreate}><Plus className="h-4 w-4" /> Create farm</Button>}
       />
+      <SectionHelp id="farms" items={HELP} />
       {list.length === 0 ? (
         <EmptyState icon={<Sprout />} title="No farms yet"
           description="Create your first farm to start monitoring your mushroom production."

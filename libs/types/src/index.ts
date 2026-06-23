@@ -234,5 +234,65 @@ export const AuditEntry = z.object({
 });
 export type AuditEntry = z.infer<typeof AuditEntry>;
 
+/* ── Spawn production (passage chain MC → G1 → G2 → spawn → substrate) ── */
+export const SpawnStage = z.enum([
+  "MOTHER_CULTURE",   // agar plate / slant
+  "LIQUID_CULTURE",   // LC in jar
+  "GRAIN_G1",         // first grain spawn
+  "GRAIN_G2",         // grain-to-grain expansion
+  "SPAWN_MASTER",     // master / sawdust spawn ready to sell
+  "SUBSTRATE_F1",     // fruiting substrate block
+]);
+export type SpawnStage = z.infer<typeof SpawnStage>;
+
+export const SPAWN_STAGE_ORDER: SpawnStage[] = [
+  "MOTHER_CULTURE", "LIQUID_CULTURE", "GRAIN_G1", "GRAIN_G2", "SPAWN_MASTER", "SUBSTRATE_F1",
+];
+export const SPAWN_STAGE_LABEL: Record<SpawnStage, string> = {
+  MOTHER_CULTURE: "Mother culture",
+  LIQUID_CULTURE: "Liquid culture",
+  GRAIN_G1: "Grain spawn G1",
+  GRAIN_G2: "Grain spawn G2",
+  SPAWN_MASTER: "Master / sawdust spawn",
+  SUBSTRATE_F1: "Substrate block F1",
+};
+/** Suggested base colonization days AT OPTIMUM (Oyster-calibrated; grower edits per batch). */
+export const SPAWN_STAGE_BASE_DAYS: Record<SpawnStage, number> = {
+  MOTHER_CULTURE: 8,
+  LIQUID_CULTURE: 5,
+  GRAIN_G1: 12,
+  GRAIN_G2: 10,
+  SPAWN_MASTER: 14,
+  SUBSTRATE_F1: 16,
+};
+
+export const SpawnStatus = z.enum(["INOCULATED", "COLONIZING", "READY", "SOLD", "USED", "CONTAMINATED"]);
+export type SpawnStatus = z.infer<typeof SpawnStatus>;
+
+export const SpawnBatch = z.object({
+  id,
+  code,                                    // e.g. MC-OYS-001
+  label: shortText.default(""),            // human name, e.g. "Culture A"
+  strainId: id,
+  stage: SpawnStage,
+  parentId: id.nullable().default(null),   // lineage: which batch it was transferred from
+  substrate: shortText.default(""),        // PDA agar / Sorghum grain / Sawdust …
+  container: shortCode.default(""),        // Petri dish / Jar / Spawn bag
+  quantity: count,                         // units produced
+  zoneId: id.nullable().default(null),     // incubation zone → live climate for the ETA
+  inoculatedOn: dateStr,
+  expectedColonizationDays: z.number().int().positive().default(12), // base, at optimum
+  status: SpawnStatus.default("INOCULATED"),
+  buyer: shortText.default(""),            // who ordered (optional)
+  notes,
+  createdAt: ISO,
+});
+export const SpawnBatchCreate = SpawnBatch.omit({ id: true, createdAt: true })
+  .partial({ label: true, parentId: true, substrate: true, container: true, quantity: true, zoneId: true, status: true, buyer: true, notes: true });
+export type SpawnBatch = z.infer<typeof SpawnBatch>;
+export type SpawnBatchCreate = z.infer<typeof SpawnBatchCreate>;
+
 /* ── Lifecycle helpers ──────────────────────────────────────── */
 export const LIFECYCLE_ORDER: LifecycleStage[] = ["CREATED", "COLONIZING", "PINNING", "FRUITING", "HARVESTED"];
+
+export * from "./colonization";

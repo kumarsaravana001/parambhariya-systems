@@ -11,7 +11,7 @@ import type {
  */
 
 export type Resource =
-  | "farms" | "rooms" | "zones" | "bags" | "strains"
+  | "farms" | "rooms" | "zones" | "bags" | "strains" | "spawn"
   | "cultures" | "storage" | "categories" | "custom-fields";
 
 export interface Summary {

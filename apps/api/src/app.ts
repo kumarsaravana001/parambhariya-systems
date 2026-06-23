@@ -93,6 +93,11 @@ export function createApp(db: Db) {
     label: (r) => r.code,
     onCreate: (d) => ({ stageProgress: 0, weightG: null, ...d, createdAt: new Date().toISOString() }),
   });
+  crud(app, "/spawn", schema.spawnBatches, T.SpawnBatchCreate, db, {
+    name: "Spawn",
+    label: (r) => r.code,
+    onCreate: (d) => ({ label: "", parentId: null, substrate: "", container: "", quantity: 0, zoneId: null, status: "INOCULATED", buyer: "", notes: "", ...d, createdAt: new Date().toISOString() }),
+  });
 
   // zone setpoint (the temperature-control write path)
   app.patch("/zones/:id/setpoint", async (c) => {

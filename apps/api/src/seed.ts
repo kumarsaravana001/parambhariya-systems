@@ -59,6 +59,21 @@ export function seed(db: Db) {
     createdAt: iso(b.age),
   }).run();
 
+  // Spawn production lineage (Oyster): Culture A (MC) → Culture B (G1) → Culture A·A (F1)
+  const mcId = nanoid(), g1Id = nanoid(), f1Id = nanoid();
+  const spawn = [
+    { id: mcId, code: "MC-OYS-001", label: "Culture A", strainId: "s-pleurotus", stage: "MOTHER_CULTURE", parentId: null, substrate: "PDA agar", container: "Petri dish", quantity: 6, zoneId: "z-a1-c1", inocAge: 6, expectedColonizationDays: 8, status: "COLONIZING", buyer: "" },
+    { id: g1Id, code: "G1-OYS-014", label: "Culture B", strainId: "s-pleurotus", stage: "GRAIN_G1", parentId: mcId, substrate: "Sorghum grain", container: "1 L jar", quantity: 10, zoneId: "z-a1-c1", inocAge: 4, expectedColonizationDays: 12, status: "COLONIZING", buyer: "" },
+    { id: f1Id, code: "F1-OYS-031", label: "Culture A·A", strainId: "s-pleurotus", stage: "SUBSTRATE_F1", parentId: g1Id, substrate: "Supplemented sawdust", container: "Spawn bag", quantity: 40, zoneId: "z-a2-f1", inocAge: 2, expectedColonizationDays: 16, status: "COLONIZING", buyer: "FarmFresh Coimbatore" },
+    { id: nanoid(), code: "SM-SHI-002", label: "Shiitake master", strainId: "s-lentinula", stage: "SPAWN_MASTER", parentId: null, substrate: "Hardwood sawdust", container: "Spawn bag", quantity: 25, zoneId: "z-p1-c1", inocAge: 20, expectedColonizationDays: 45, status: "COLONIZING", buyer: "" },
+  ];
+  for (const s of spawn) db.insert(schema.spawnBatches).values({
+    id: s.id, code: s.code, label: s.label, strainId: s.strainId, stage: s.stage, parentId: s.parentId,
+    substrate: s.substrate, container: s.container, quantity: s.quantity, zoneId: s.zoneId,
+    inoculatedOn: iso(s.inocAge).slice(0, 10), expectedColonizationDays: s.expectedColonizationDays,
+    status: s.status, buyer: s.buyer, notes: "", createdAt: iso(s.inocAge),
+  }).run();
+
   // Lab seed
   const cats = [
     { id: "c1", parentId: null, name: "Fungi" },

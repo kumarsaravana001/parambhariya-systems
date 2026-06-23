@@ -8,6 +8,7 @@ import { FlaskConical, CheckCircle2, AlertTriangle, RefreshCw, Plus, Pencil, Tra
 import type { Culture, CultureStatus } from "@parambhariya/types";
 import { useCultures, useStorage, useCategories, useCreate, useUpdate, useRemove } from "../lib/queries";
 import { EntityForm, type FieldSpec } from "../lib/EntityForm";
+import { SectionHelp } from "../lib/SectionHelp";
 
 const STATUSES: CultureStatus[] = ["active", "inactive", "archived", "quarantine", "extinct"];
 const KINGDOMS = ["Archaebacteria", "Eubacteria", "Protista", "Fungi", "Plantae", "Animalia"];
@@ -60,6 +61,11 @@ function Cultures() {
 
   return (
     <div>
+      <SectionHelp id="lab-cultures" items={[
+        { label: "What this is", body: "Your microbial culture bank — every strain you keep on agar, with status, generation and stock." },
+        { label: "Spawn link", body: "Cultures here are the start of the spawn ladder. Use the Spawn section (Spawn → in the sub-nav) to multiply a culture into grain and substrate spawn with ready dates." },
+        { label: "Quarantine", body: "Flag anything suspect as contaminated/quarantine so it never enters a spawn transfer." },
+      ]} />
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
         <div className="flex-1"><SearchInput placeholder="Search cultures…" value={query} onChange={(e) => setQuery(e.target.value)} onClear={() => setQuery("")} /></div>
         <Button size="sm" onClick={() => { setEditing(null); setFormOpen(true); }}><Plus className="h-4 w-4" /> Add Culture</Button>

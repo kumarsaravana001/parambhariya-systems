@@ -3,6 +3,7 @@ import {
   PageHeader, Card, CardTitle, MetricCard, Spark, LifeBadge, Progress, LIFECYCLE_ORDER, ListSkeleton, ErrorState,
 } from "@parambhariya/ui";
 import { useBags, useStrains, useSummary } from "../lib/queries";
+import { SectionHelp } from "../lib/SectionHelp";
 
 function ReportsScreen() {
   const bags = useBags();
@@ -26,6 +27,10 @@ function ReportsScreen() {
   return (
     <div>
       <PageHeader title="Reports" description="Production at a glance." />
+      <SectionHelp id="reports" items={[
+        { label: "What this is", body: "Your production rollup — total bags, harvested, yield (kg) and contamination success rate, plus a breakdown by stage and strain." },
+        { label: "Reading it", body: "Success rate = non-contaminated bags. A strain with repeated contamination is a signal to check that spawn line in the Spawn section." },
+      ]} />
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <MetricCard label="Bags this cycle" value={s?.bagsTotal ?? 0} />
         <MetricCard label="Harvested" value={s?.bagsHarvested ?? 0} tone="success" />

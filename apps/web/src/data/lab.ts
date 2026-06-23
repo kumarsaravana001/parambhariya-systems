@@ -1,11 +1,10 @@
 /**
- * CBM Lab Portal — mock data. Microbial culture tracking.
+ * Parambhariya Lab Portal — mock data (internal microbial culture tracking).
  * Rendered in the Parambhariya design system; see docs/CBM-LAB-PORTAL.md.
  */
 
 export type CultureStatus = "active" | "inactive" | "archived" | "quarantine" | "extinct";
 export type Kingdom = "Archaebacteria" | "Eubacteria" | "Protista" | "Fungi" | "Plantae" | "Animalia";
-export type Role = "Admin" | "Technician" | "Viewer";
 
 export interface Culture {
   id: string;            // CB-001
@@ -38,16 +37,6 @@ export interface CategoryNode {
   children?: CategoryNode[];
 }
 
-export interface LabUser {
-  id: string;
-  name: string;
-  email: string;
-  role: Role;
-  status: "Active" | "Inactive" | "Suspended";
-  joined: string;
-  you?: boolean;
-}
-
 export interface CustomField {
   id: string;
   label: string;
@@ -62,18 +51,6 @@ export interface AuditEntry {
   table: "Cultures" | "Isolation" | "Revival" | "Transfers" | "Storage";
   action: "Created" | "Updated" | "Deleted";
   detail: string;
-}
-
-export interface Plan {
-  id: string;
-  name: string;
-  priceMonthly: number;   // ₹
-  cultures: number | "Unlimited";
-  users: number | "Custom";
-  storage: string;
-  features: string[];
-  popular?: boolean;
-  enterprise?: boolean;
 }
 
 export const CULTURE_STATUSES: CultureStatus[] = ["active", "inactive", "archived", "quarantine", "extinct"];
@@ -138,15 +115,6 @@ export const categoryTree: CategoryNode[] = [
   { id: "c3", name: "Control strains" },
 ];
 
-export const labUsers: LabUser[] = [
-  { id: "u1", name: "Saravanakumar", email: "saravana@agripie.com", role: "Admin", status: "Active", joined: "2026-06-17", you: true },
-  { id: "u2", name: "Venkatesh", email: "venkatesh@agripie.com", role: "Technician", status: "Active", joined: "2026-06-18" },
-  { id: "u3", name: "Dr. Sree Gayathri", email: "gayathri@agripie.com", role: "Technician", status: "Active", joined: "2026-06-18" },
-  { id: "u4", name: "CA Vishnu Manoj", email: "vishnu@agripie.com", role: "Viewer", status: "Inactive", joined: "2026-06-19" },
-];
-
-export const roleTone: Record<Role, "info" | "neutral"> = { Admin: "info", Technician: "neutral", Viewer: "neutral" };
-
 export const customFields: CustomField[] = [
   { id: "cf1", label: "Collection Site", type: "Text", required: false },
   { id: "cf2", label: "Substrate", type: "Dropdown", required: true },
@@ -163,14 +131,6 @@ export const auditLog: AuditEntry[] = [
 export const auditActionTone: Record<AuditEntry["action"], "success" | "warn" | "danger"> = {
   Created: "success", Updated: "warn", Deleted: "danger",
 };
-
-export const plans: Plan[] = [
-  { id: "micro", name: "Micro", priceMonthly: 419, cultures: 25, users: 1, storage: "250 MB", features: ["QR labels", "Passage logging", "2FA", "Audit logs", "Email support"] },
-  { id: "inoculum", name: "Inoculum", priceMonthly: 1249, cultures: 100, users: 1, storage: "1 GB", features: ["QR labels", "Passage logging", "2FA", "Audit logs", "Email support"], popular: true },
-  { id: "primordia", name: "Primordia", priceMonthly: 3329, cultures: 500, users: 2, storage: "2 GB", features: ["Everything in Inoculum", "Custom fields", "Bulk import / export"] },
-  { id: "stroma", name: "Stroma", priceMonthly: 7999, cultures: 2000, users: 10, storage: "5 GB", features: ["Everything in Primordia", "Dedicated support"] },
-  { id: "enterprise", name: "Enterprise", priceMonthly: 0, cultures: "Unlimited", users: "Custom", storage: "Custom", features: ["Unlimited cultures", "Custom storage", "SLA", "Dedicated support"], enterprise: true },
-];
 
 /* aggregates */
 export const cultureStats = () => ({

@@ -23,8 +23,6 @@ import { Route as LabIndexRouteImport } from "./routes/lab.index";
 import { Route as FarmsIndexRouteImport } from "./routes/farms.index";
 import { Route as ZoneZoneIdRouteImport } from "./routes/zone.$zoneId";
 import { Route as RoomRoomIdRouteImport } from "./routes/room.$roomId";
-import { Route as LabUsersRouteImport } from "./routes/lab.users";
-import { Route as LabSubscriptionRouteImport } from "./routes/lab.subscription";
 import { Route as LabStorageRouteImport } from "./routes/lab.storage";
 import { Route as LabSecurityRouteImport } from "./routes/lab.security";
 import { Route as LabDataRouteImport } from "./routes/lab.data";
@@ -105,16 +103,6 @@ const RoomRoomIdRoute = RoomRoomIdRouteImport.update({
   path: "/room/$roomId",
   getParentRoute: () => rootRouteImport,
 } as any);
-const LabUsersRoute = LabUsersRouteImport.update({
-  id: "/users",
-  path: "/users",
-  getParentRoute: () => LabRoute,
-} as any);
-const LabSubscriptionRoute = LabSubscriptionRouteImport.update({
-  id: "/subscription",
-  path: "/subscription",
-  getParentRoute: () => LabRoute,
-} as any);
 const LabStorageRoute = LabStorageRouteImport.update({
   id: "/storage",
   path: "/storage",
@@ -181,8 +169,6 @@ export interface FileRoutesByFullPath {
   "/lab/data": typeof LabDataRoute;
   "/lab/security": typeof LabSecurityRoute;
   "/lab/storage": typeof LabStorageRoute;
-  "/lab/subscription": typeof LabSubscriptionRoute;
-  "/lab/users": typeof LabUsersRoute;
   "/room/$roomId": typeof RoomRoomIdRoute;
   "/zone/$zoneId": typeof ZoneZoneIdRoute;
   "/farms/": typeof FarmsIndexRoute;
@@ -207,8 +193,6 @@ export interface FileRoutesByTo {
   "/lab/data": typeof LabDataRoute;
   "/lab/security": typeof LabSecurityRoute;
   "/lab/storage": typeof LabStorageRoute;
-  "/lab/subscription": typeof LabSubscriptionRoute;
-  "/lab/users": typeof LabUsersRoute;
   "/room/$roomId": typeof RoomRoomIdRoute;
   "/zone/$zoneId": typeof ZoneZoneIdRoute;
   "/farms": typeof FarmsIndexRoute;
@@ -235,8 +219,6 @@ export interface FileRoutesById {
   "/lab/data": typeof LabDataRoute;
   "/lab/security": typeof LabSecurityRoute;
   "/lab/storage": typeof LabStorageRoute;
-  "/lab/subscription": typeof LabSubscriptionRoute;
-  "/lab/users": typeof LabUsersRoute;
   "/room/$roomId": typeof RoomRoomIdRoute;
   "/zone/$zoneId": typeof ZoneZoneIdRoute;
   "/farms/": typeof FarmsIndexRoute;
@@ -264,8 +246,6 @@ export interface FileRouteTypes {
     | "/lab/data"
     | "/lab/security"
     | "/lab/storage"
-    | "/lab/subscription"
-    | "/lab/users"
     | "/room/$roomId"
     | "/zone/$zoneId"
     | "/farms/"
@@ -290,8 +270,6 @@ export interface FileRouteTypes {
     | "/lab/data"
     | "/lab/security"
     | "/lab/storage"
-    | "/lab/subscription"
-    | "/lab/users"
     | "/room/$roomId"
     | "/zone/$zoneId"
     | "/farms"
@@ -317,8 +295,6 @@ export interface FileRouteTypes {
     | "/lab/data"
     | "/lab/security"
     | "/lab/storage"
-    | "/lab/subscription"
-    | "/lab/users"
     | "/room/$roomId"
     | "/zone/$zoneId"
     | "/farms/"
@@ -443,20 +419,6 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof RoomRoomIdRouteImport;
       parentRoute: typeof rootRouteImport;
     };
-    "/lab/users": {
-      id: "/lab/users";
-      path: "/users";
-      fullPath: "/lab/users";
-      preLoaderRoute: typeof LabUsersRouteImport;
-      parentRoute: typeof LabRoute;
-    };
-    "/lab/subscription": {
-      id: "/lab/subscription";
-      path: "/subscription";
-      fullPath: "/lab/subscription";
-      preLoaderRoute: typeof LabSubscriptionRouteImport;
-      parentRoute: typeof LabRoute;
-    };
     "/lab/storage": {
       id: "/lab/storage";
       path: "/storage";
@@ -531,8 +493,6 @@ interface LabRouteChildren {
   LabDataRoute: typeof LabDataRoute;
   LabSecurityRoute: typeof LabSecurityRoute;
   LabStorageRoute: typeof LabStorageRoute;
-  LabSubscriptionRoute: typeof LabSubscriptionRoute;
-  LabUsersRoute: typeof LabUsersRoute;
   LabIndexRoute: typeof LabIndexRoute;
 }
 
@@ -544,8 +504,6 @@ const LabRouteChildren: LabRouteChildren = {
   LabDataRoute: LabDataRoute,
   LabSecurityRoute: LabSecurityRoute,
   LabStorageRoute: LabStorageRoute,
-  LabSubscriptionRoute: LabSubscriptionRoute,
-  LabUsersRoute: LabUsersRoute,
   LabIndexRoute: LabIndexRoute,
 };
 

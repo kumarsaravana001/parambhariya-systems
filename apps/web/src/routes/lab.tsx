@@ -1,9 +1,7 @@
-import * as React from "react";
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { AlertBanner } from "@parambhariya/ui";
 import {
-  FlaskConical, Database, FolderTree, Download, Users as UsersIcon,
-  SlidersHorizontal, CreditCard, ScrollText, ShieldCheck, LayoutDashboard,
+  FlaskConical, Database, FolderTree, Download,
+  SlidersHorizontal, ScrollText, ShieldCheck, LayoutDashboard,
 } from "lucide-react";
 
 const SUBNAV = [
@@ -12,16 +10,13 @@ const SUBNAV = [
   { label: "Storage",       href: "/lab/storage",       icon: <Database /> },
   { label: "Categories",    href: "/lab/categories",    icon: <FolderTree /> },
   { label: "Data & Backup", href: "/lab/data",          icon: <Download /> },
-  { label: "Users",         href: "/lab/users",         icon: <UsersIcon /> },
   { label: "Custom Fields", href: "/lab/custom-fields", icon: <SlidersHorizontal /> },
-  { label: "Subscription",  href: "/lab/subscription",  icon: <CreditCard /> },
   { label: "Audit Logs",    href: "/lab/audit",         icon: <ScrollText /> },
   { label: "Security",      href: "/lab/security",      icon: <ShieldCheck /> },
 ];
 
 function LabLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const [showTrial, setShowTrial] = React.useState(true);
 
   return (
     <div>
@@ -30,16 +25,10 @@ function LabLayout() {
           <FlaskConical className="h-5 w-5" />
         </div>
         <div>
-          <div className="text-xs font-semibold uppercase tracking-[0.06em] text-text-muted">Culture Bank Manager</div>
+          <div className="text-xs font-semibold uppercase tracking-[0.06em] text-text-muted">Parambhariya · Internal</div>
           <h1 className="text-xl font-bold tracking-[-0.015em] text-text-primary leading-tight">Lab Portal</h1>
         </div>
       </div>
-
-      {showTrial && (
-        <AlertBanner tone="info" title="Your free trial ends in 15 days." onDismiss={() => setShowTrial(false)} className="mb-4">
-          Upgrade any time to unlock higher culture limits, custom fields, and bulk import.
-        </AlertBanner>
-      )}
 
       {/* sub-nav */}
       <nav aria-label="Lab portal" className="mb-6 -mx-1 overflow-x-auto">

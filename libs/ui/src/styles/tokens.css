@@ -107,12 +107,16 @@
   --shadow-lg: 0 20px 40px -8px rgba(20, 32, 26, 0.12);
 
   /* ── Z-index (1.2) ───────────────────────────────────── */
+  /* Floating content (dropdown/select/popover/menu) MUST sit above the modal
+     layer: these are routinely opened inside dialogs, and all portal to <body>,
+     so a lower z would render them behind the dialog. Order: nav < overlay <
+     modal < dropdown < toast. */
   --z-base:     0;   /* @kind other */
   --z-nav:      10;  /* @kind other */
-  --z-dropdown: 20;  /* @kind other */
   --z-overlay:  40;  /* @kind other */
   --z-modal:    50;  /* @kind other */
-  --z-toast:    60;  /* @kind other */
+  --z-dropdown: 60;  /* @kind other — above modal so selects/popovers work inside dialogs */
+  --z-toast:    70;  /* @kind other — tooltips/toasts on top of everything */
 
   /* ── Breakpoints (1.3) ───────────────────────────────── */
   /* Tokens only — use in @media via custom-media or duplicate in queries.

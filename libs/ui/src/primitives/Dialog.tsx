@@ -18,6 +18,12 @@ export const DialogOverlay = React.forwardRef<
       "fixed inset-0 z-[var(--z-overlay)] bg-[var(--surface-overlay)]",
       "data-[state=open]:[animation:var(--animate-overlay-in)]",
       "data-[state=closed]:[animation:var(--animate-overlay-out)]",
+      // A closed overlay must never capture clicks. Radix keeps it mounted
+      // through the exit animation (and on React 19 the Presence unmount can
+      // lag), leaving a full-screen invisible overlay that freezes the page.
+      // Radix's DismissableLayer sets `pointer-events: auto` INLINE, so we need
+      // `!important` (Tailwind's trailing `!`) to win over it.
+      "data-[state=closed]:pointer-events-none!",
       className
     )}
     {...props}
@@ -41,6 +47,7 @@ export const DialogContent = React.forwardRef<
         "focus:outline-none",
         "data-[state=open]:[animation:var(--animate-dialog-in)]",
         "data-[state=closed]:[animation:var(--animate-dialog-out)]",
+        "data-[state=closed]:pointer-events-none!",
         className
       )}
       {...props}

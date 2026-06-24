@@ -34,7 +34,7 @@ export const Slider = React.forwardRef<
           )}
         >
           {showBubble && (
-            <span className="absolute -top-7 left-1/2 -translate-x-1/2 rounded-md bg-text-primary text-white text-xs px-1.5 py-0.5 font-mono whitespace-nowrap">
+            <span className="absolute -top-7 left-1/2 -translate-x-1/2 rounded-md bg-text-primary text-[var(--text-inverse)] text-xs px-1.5 py-0.5 font-mono whitespace-nowrap">
               {formatValue ? formatValue(v) : v}
             </span>
           )}

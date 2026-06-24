@@ -42,6 +42,11 @@ export const DialogContent = React.forwardRef<
       className={cn(
         "fixed left-1/2 top-1/2 z-[var(--z-modal)] -translate-x-1/2 -translate-y-1/2",
         "w-[calc(100vw-2rem)] max-w-lg",
+        // Never exceed the viewport (landscape phones / short screens): cap to
+        // the dynamic viewport height and lay out as a column so a consumer can
+        // pin its header/footer and scroll the middle. dvh accounts for mobile
+        // browser chrome; the 1rem inset keeps a margin top and bottom.
+        "max-h-[calc(100dvh-2rem)] flex flex-col overflow-hidden",
         "bg-surface-card rounded-xl shadow-lg border border-border-default",
         "p-6",
         "focus:outline-none",
@@ -55,7 +60,7 @@ export const DialogContent = React.forwardRef<
       {children}
       <DialogPrimitive.Close
         aria-label="Close"
-        className="absolute right-4 top-4 rounded-sm p-1 text-text-muted hover:bg-surface-muted hover:text-text-primary focus-visible:ring-2 focus-visible:ring-brand-500"
+        className="absolute right-3 top-3 grid place-items-center rounded-md p-2 text-text-muted hover:bg-surface-muted hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
       >
         <X className="h-4 w-4" aria-hidden />
       </DialogPrimitive.Close>

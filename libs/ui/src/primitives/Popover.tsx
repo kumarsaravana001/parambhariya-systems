@@ -17,6 +17,7 @@ export const PopoverContent = React.forwardRef<
       sideOffset={sideOffset}
       className={cn(
         "z-[var(--z-dropdown)] w-72 rounded-md border border-border-default bg-surface-card text-text-primary shadow-md p-4",
+        "max-h-[80dvh] overflow-y-auto",
         "focus:outline-none",
         className
       )}

@@ -2,11 +2,16 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { applyTenantTheme } from "@parambhariya/ui";
+import { applyTenantTheme, applyColorScheme, storedThemeChoice, watchSystemScheme } from "@parambhariya/ui";
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 
 applyTenantTheme("mushroomai");
+// Apply the persisted theme choice (light | dark | system). The index.html head
+// script already set data-theme to avoid a flash; this re-syncs, and because the
+// watcher always re-applies the stored choice, "system" stays live as the OS flips.
+applyColorScheme(storedThemeChoice());
+watchSystemScheme(() => applyColorScheme(storedThemeChoice()));
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },

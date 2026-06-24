@@ -15,7 +15,7 @@ export interface FarmCardProps extends React.HTMLAttributes<HTMLDivElement> {
 export const FarmCard = React.forwardRef<HTMLDivElement, FarmCardProps>(
   ({ className, name, location, rooms, bags, alerts, ...props }, ref) => (
     <Card ref={ref} interactive className={cn("flex items-start gap-4", className)} {...props}>
-      <div className="h-12 w-12 rounded-md bg-brand-50 grid place-items-center text-brand-700 shrink-0" aria-hidden>
+      <div className="h-12 w-12 rounded-md bg-brand-50 dark:bg-surface-muted grid place-items-center text-brand-700 shrink-0" aria-hidden>
         <Sprout />
       </div>
       <div className="flex-1 min-w-0">

@@ -24,7 +24,7 @@ function Kpi({ icon, label, value, unit, sub, tone = "default" }: {
   icon: React.ReactNode; label: string; value: string | number; unit?: string; sub?: string;
   tone?: "default" | "success" | "warn" | "danger";
 }) {
-  const accent = { default: "text-brand-700 bg-brand-50", success: "text-success-fg bg-success-bg", warn: "text-warn-fg bg-warn-bg", danger: "text-danger-fg bg-danger-bg" }[tone];
+  const accent = { default: "text-brand-700 bg-brand-50 dark:bg-surface-muted", success: "text-success-fg bg-success-bg", warn: "text-warn-fg bg-warn-bg", danger: "text-danger-fg bg-danger-bg" }[tone];
   return (
     <Card padding="lg" className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
@@ -80,7 +80,7 @@ function InoculationPlanner({ strains, zones }: { strains: any[]; zones: any[] }
         <FormField label="Inoculate on" htmlFor="ip-date"><Input id="ip-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} /></FormField>
       </div>
       {result && (
-        <div className="rounded-lg bg-brand-50 p-4">
+        <div className="rounded-lg bg-brand-50 dark:bg-surface-muted p-4">
           <div className="flex items-baseline justify-between flex-wrap gap-2">
             <div>
               <div className="text-xs uppercase tracking-[0.06em] text-text-muted">Estimated ready</div>
@@ -280,7 +280,7 @@ function Dashboard() {
             return (
               <Link key={f.id} to="/farms/$farmId" params={{ farmId: f.id }}>
                 <Card interactive className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-md bg-brand-50 grid place-items-center text-brand-700 shrink-0"><Sprout /></div>
+                  <div className="h-12 w-12 rounded-md bg-brand-50 dark:bg-surface-muted grid place-items-center text-brand-700 shrink-0"><Sprout /></div>
                   <div className="flex-1 min-w-0">
                     <CardTitle className="truncate">{f.name}</CardTitle>
                     <div className="text-xs text-text-muted mt-0.5">{f.location}</div>

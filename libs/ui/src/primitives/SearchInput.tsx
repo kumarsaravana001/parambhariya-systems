@@ -35,7 +35,7 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
             type="button"
             onClick={onClear}
             aria-label="Clear search"
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-sm p-1 text-text-muted hover:bg-surface-muted hover:text-text-primary focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 grid place-items-center rounded-md p-2 text-text-muted hover:bg-surface-muted hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           >
             <X className="h-4 w-4" aria-hidden />
           </button>

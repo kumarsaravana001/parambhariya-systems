@@ -4,7 +4,7 @@ import {
   PageHeader, Card, CardTitle, Tabs, TabsList, TabsTrigger, TabsContent,
   TenantCard, ToggleRow, Switch, Slider, RadioGroup, Radio, Label, FormField, Input, Button,
   Badge, DataList, Alert,
-  applyTenantTheme, applyColorScheme, TENANT_PRESETS, type TenantId,
+  applyTenantTheme, applyColorScheme, storedThemeChoice, TENANT_PRESETS, type TenantId, type ThemeChoice,
 } from "@parambhariya/ui";
 import { Building2, Palette, Ruler, Bell, Gauge, Database, Info, Download, RotateCcw } from "lucide-react";
 import { SectionHelp } from "../lib/SectionHelp";
@@ -15,15 +15,15 @@ import { resetLocalDb } from "../lib/local-driver";
 function SettingsScreen() {
   const { settings, update } = useSettings();
   const [tenant, setTenant] = React.useState<TenantId>((document.documentElement.dataset.tenant as TenantId) ?? "mushroomai");
-  const [scheme, setScheme] = React.useState<"light" | "dark">((document.documentElement.dataset.theme as "light" | "dark") ?? "light");
+  const [scheme, setScheme] = React.useState<ThemeChoice>(() => storedThemeChoice());
   const [sampleRate, setSampleRate] = React.useState([30]);
 
   const pickTenant = (id: TenantId) => { setTenant(id); applyTenantTheme(id); };
-  const pickScheme = (v: "light" | "dark") => { setScheme(v); applyColorScheme(v); };
+  const pickScheme = (v: ThemeChoice) => { setScheme(v); applyColorScheme(v); };
 
   const exportData = () => {
     try {
-      const blob = new Blob([localStorage.getItem("parambhariya.db.v3") ?? "{}"], { type: "application/json" });
+      const blob = new Blob([localStorage.getItem("parambhariya.db.v5") ?? "{}"], { type: "application/json" });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = "parambhariya-data.json";
@@ -75,10 +75,12 @@ function SettingsScreen() {
             </div>
           </Card>
           <Card padding="lg">
-            <CardTitle className="mb-3">Color scheme</CardTitle>
-            <RadioGroup value={scheme} onValueChange={(v) => pickScheme(v as "light" | "dark")} orientation="horizontal">
+            <CardTitle className="mb-1">Color scheme</CardTitle>
+            <p className="text-sm text-text-muted mb-3">Saved on this device. <span className="font-medium">System</span> follows your phone's light/dark setting — handy for grow-room checks at night.</p>
+            <RadioGroup value={scheme} onValueChange={(v) => pickScheme(v as ThemeChoice)} orientation="horizontal">
               <Label htmlFor="sc-l" className="flex items-center gap-2 cursor-pointer"><Radio id="sc-l" value="light" /> Light</Label>
               <Label htmlFor="sc-d" className="flex items-center gap-2 cursor-pointer"><Radio id="sc-d" value="dark" /> Dark</Label>
+              <Label htmlFor="sc-s" className="flex items-center gap-2 cursor-pointer"><Radio id="sc-s" value="system" /> System</Label>
             </RadioGroup>
           </Card>
         </TabsContent>

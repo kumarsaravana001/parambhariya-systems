@@ -27,7 +27,7 @@ function Audit() {
     <div>
       <h2 className="text-lg font-semibold text-text-primary mb-4">Audit Trail</h2>
       <Card padding="md" className="mb-4 flex flex-wrap items-center gap-3">
-        <div className="flex-1 min-w-[180px]"><SearchInput placeholder="Search audit entries…" value={query} onChange={(e) => setQuery(e.target.value)} onClear={() => setQuery("")} /></div>
+        <div className="flex-1 min-w-0 sm:min-w-[180px] basis-full sm:basis-auto"><SearchInput placeholder="Search audit entries…" value={query} onChange={(e) => setQuery(e.target.value)} onClear={() => setQuery("")} /></div>
         <Select value={action} onValueChange={setAction}>
           <SelectTrigger className="w-auto min-w-[140px]"><SelectValue /></SelectTrigger>
           <SelectContent><SelectItem value="all">All actions</SelectItem>{ACTIONS.map((a) => <SelectItem key={a} value={a}>{a}</SelectItem>)}</SelectContent>

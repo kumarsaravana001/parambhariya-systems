@@ -84,7 +84,7 @@ export function FileInput({
             "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             dragover
-              ? "border-brand-500 bg-brand-50"
+              ? "border-brand-500 bg-brand-50 dark:bg-surface-muted"
               : "border-border-default hover:border-border-strong hover:bg-surface-muted"
           )}
         >

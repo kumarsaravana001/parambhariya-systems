@@ -2,10 +2,11 @@ import * as React from "react";
 import { createRootRoute, Outlet, Link, useRouterState } from "@tanstack/react-router";
 import {
   AppShell, TopBar, Sidebar, BottomNav, Brand, Button, IconButton, Avatar, TooltipProvider,
+  Dialog, DialogContent, DialogHeader, DialogTitle, Toaster,
 } from "@parambhariya/ui";
 import {
   Sprout, TriangleAlert, ChartBar, Dna, Settings, LogOut, Bell,
-  LayoutDashboard, Workflow, FlaskConical, TestTubes,
+  LayoutDashboard, Workflow, FlaskConical, TestTubes, Menu,
 } from "lucide-react";
 import { useAlerts, useLiveReadings } from "../lib/queries";
 
@@ -21,9 +22,13 @@ const NAV = [
   { label: "Settings",   href: "/settings",   icon: <Settings /> },
 ];
 
+// Routes that live behind the mobile "More" sheet (everything not on the bottom bar).
+const MORE_HREFS = ["/strains", "/reports", "/flows", "/lab", "/settings"];
+
 function Shell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isLogin = pathname === "/" || pathname === "/login";
+  const [moreOpen, setMoreOpen] = React.useState(false);
 
   // Keep the live control loop subscription + alert badge running app-wide.
   useLiveReadings();
@@ -43,8 +48,16 @@ function Shell() {
     active: pathname.startsWith(n.href),
     badge: n.href === "/alerts" ? openAlerts : undefined,
   }));
-  // Mobile bottom = first 4 nav entries (spec: 4-tab mobile shell)
-  const mobile = items.slice(0, 4);
+  const byHref = (h: string) => items.find((i) => i.href === h)!;
+  // Mobile bottom bar: 4 thumb-zone tabs (Dashboard, Farms, Spawn, Alerts —
+  // Alerts kept first-class so its badge stays visible) + a "More" sheet that
+  // holds the rest. Everything stays reachable one-handed; nothing is dropped.
+  const moreActive = MORE_HREFS.some((h) => pathname.startsWith(h));
+  const mobile = [
+    byHref("/dashboard"), byHref("/farms"), byHref("/spawn"), byHref("/alerts"),
+    { label: "More", href: "__more__", icon: <Menu />, active: moreActive },
+  ];
+  const moreItems = MORE_HREFS.map(byHref);
 
   return (
     <TooltipProvider>
@@ -95,16 +108,50 @@ function Shell() {
         bottomNav={
           <BottomNav
             items={mobile}
-            renderItem={(item, content) => (
-              <Link to={item.href} aria-current={item.active ? "page" : undefined}>
-                {content}
-              </Link>
-            )}
+            renderItem={(item, content) =>
+              item.href === "__more__" ? (
+                <button type="button" className="w-full" aria-haspopup="dialog" aria-expanded={moreOpen} onClick={() => setMoreOpen(true)}>
+                  {content}
+                </button>
+              ) : (
+                <Link to={item.href} aria-current={item.active ? "page" : undefined}>
+                  {content}
+                </Link>
+              )
+            }
           />
         }
       >
         <Outlet />
       </AppShell>
+
+      {/* Mobile "More" sheet — the routes that don't fit the bottom bar */}
+      <Dialog open={moreOpen} onOpenChange={setMoreOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>More</DialogTitle></DialogHeader>
+          <nav className="flex flex-col gap-1">
+            {moreItems.map((item) => (
+              <Link
+                key={item.href}
+                to={item.href}
+                onClick={() => setMoreOpen(false)}
+                aria-current={item.active ? "page" : undefined}
+                className={
+                  "flex items-center gap-3 px-3 h-12 rounded-md text-sm font-medium [&_svg]:h-5 [&_svg]:w-5 " +
+                  (item.active ? "bg-brand-50 dark:bg-surface-muted text-brand-700" : "text-text-secondary hover:bg-surface-muted hover:text-text-primary")
+                }
+              >
+                {item.icon}
+                <span className="flex-1">{item.label}</span>
+                {item.badge !== undefined && item.badge > 0 && (
+                  <span className="text-xs font-mono bg-danger-bg text-danger-fg px-1.5 py-0.5 rounded-sm">{item.badge}</span>
+                )}
+              </Link>
+            ))}
+          </nav>
+        </DialogContent>
+      </Dialog>
+      <Toaster />
     </TooltipProvider>
   );
 }

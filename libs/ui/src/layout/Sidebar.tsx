@@ -39,7 +39,7 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
         className={cn(
           "hidden md:flex md:flex-col",
           "shrink-0 border-r border-border-default bg-surface-card",
-          "py-3 px-2 gap-1 sticky top-16 self-start h-[calc(100vh-4rem)]",
+          "py-3 px-2 gap-1 sticky top-16 self-start h-[calc(100dvh-4rem)] overflow-y-auto",
           "transition-[width] duration-[180ms]",
           isCollapsed ? "w-[72px]" : "w-60",
           className
@@ -57,7 +57,7 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
                   "hover:bg-surface-muted",
                   "[&_svg]:h-5 [&_svg]:w-5 [&_svg]:shrink-0",
                   item.active
-                    ? "bg-brand-50 text-brand-700"
+                    ? "bg-brand-50 dark:bg-surface-muted text-brand-700"
                     : "text-text-secondary hover:text-text-primary",
                   isCollapsed && "justify-center px-0"
                 )}

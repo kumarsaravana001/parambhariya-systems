@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient, type QueryClient } from "@tanstack/react-query";
 import * as React from "react";
+import { toast } from "@parambhariya/ui";
 import { getDriver, type Resource, type Summary, type LiveReading } from "./driver";
 import type {
   Farm, Room, Zone, Bag, Strain, Reading, Alert, Culture, StorageLocation, Category, CustomField, AuditEntry,
@@ -20,17 +21,31 @@ function invalidate(qc: QueryClient, r: Resource) {
   qc.invalidateQueries({ queryKey: ["summary"] });
   qc.invalidateQueries({ queryKey: ["audit"] });
 }
+const errMsg = (e: unknown) => (e instanceof Error && e.message) || "Something went wrong — try again";
+
 export function useCreate<T = any>(r: Resource) {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: (body: any) => driver.create<T>(r, body), onSuccess: () => invalidate(qc, r) });
+  return useMutation({
+    mutationFn: (body: any) => driver.create<T>(r, body),
+    onSuccess: () => { invalidate(qc, r); toast.success("Created"); },
+    onError: (e) => toast.error(errMsg(e)),
+  });
 }
 export function useUpdate<T = any>(r: Resource) {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: ({ id, body }: { id: string; body: any }) => driver.update<T>(r, id, body), onSuccess: () => invalidate(qc, r) });
+  return useMutation({
+    mutationFn: ({ id, body }: { id: string; body: any }) => driver.update<T>(r, id, body),
+    onSuccess: () => { invalidate(qc, r); toast.success("Saved"); },
+    onError: (e) => toast.error(errMsg(e)),
+  });
 }
 export function useRemove(r: Resource) {
   const qc = useQueryClient();
-  return useMutation({ mutationFn: (id: string) => driver.remove(r, id), onSuccess: () => invalidate(qc, r) });
+  return useMutation({
+    mutationFn: (id: string) => driver.remove(r, id),
+    onSuccess: () => { invalidate(qc, r); toast.success("Deleted"); },
+    onError: (e) => toast.error(errMsg(e)),
+  });
 }
 
 /* ── typed convenience wrappers ─────────────────────────────── */

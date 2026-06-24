@@ -37,6 +37,7 @@ export interface EntityFormProps {
 export function EntityForm({ open, onOpenChange, title, description, fields, initial, submitLabel = "Save", busy, onSubmit }: EntityFormProps) {
   const [values, setValues] = React.useState<Record<string, any>>({});
   const [error, setError] = React.useState<string | null>(null);
+  const bodyRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     if (open) {
@@ -46,6 +47,15 @@ export function EntityForm({ open, onOpenChange, title, description, fields, ini
       setError(null);
     }
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Focus the first field once the dialog has opened — saves a tap per create.
+  React.useEffect(() => {
+    if (!open) return;
+    const t = setTimeout(() => {
+      bodyRef.current?.querySelector<HTMLElement>("input, textarea, [role='combobox']")?.focus();
+    }, 60);
+    return () => clearTimeout(t);
+  }, [open]);
 
   const set = (name: string, v: any) => setValues((s) => ({ ...s, [name]: v }));
 
@@ -74,8 +84,9 @@ export function EntityForm({ open, onOpenChange, title, description, fields, ini
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        <form onSubmit={submit}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-1">
+        <form onSubmit={submit} className="flex flex-col min-h-0 flex-1">
+          {/* fields scroll; the dialog header (above) and footer (below) stay pinned */}
+          <div ref={bodyRef} className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto pr-1 flex-1 min-h-0">
             {fields.map((f) => {
               const id = `ef-${f.name}`;
               const control =

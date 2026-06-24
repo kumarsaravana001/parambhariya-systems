@@ -88,7 +88,7 @@ export const LifeBadge = React.forwardRef<HTMLSpanElement, LifeBadgeProps>(
           <span
             className={cn(
               "relative",
-              filledLabel && (stage === "PINNING" ? "text-life-pinning-on-fill" : "text-white")
+              filledLabel && (stage === "PINNING" ? "text-life-pinning-on-fill" : "text-[var(--text-inverse)]")
             )}
           >
             {stage}

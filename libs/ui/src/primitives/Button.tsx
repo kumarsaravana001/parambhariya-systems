@@ -24,7 +24,7 @@ const buttonVariants = cva(
         ghost:
           "text-text-primary hover:bg-surface-muted active:bg-surface-sunken",
         danger:
-          "bg-danger-fg text-white hover:opacity-90 active:opacity-80",
+          "bg-danger-fg text-[var(--text-inverse)] hover:opacity-90 active:opacity-80",
         // brand-as-text uses brand-700 (passes contrast).
         link:
           "text-brand-700 hover:underline underline-offset-2 px-0 h-auto",

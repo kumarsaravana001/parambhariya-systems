@@ -50,7 +50,7 @@ export const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
             type="button"
             onClick={onDismiss}
             aria-label="Dismiss"
-            className="shrink-0 rounded-sm p-1 hover:bg-black/5 focus-visible:ring-2 focus-visible:ring-current"
+            className="shrink-0 grid place-items-center rounded-md p-2 -m-1 hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current"
           >
             <X className="h-4 w-4" aria-hidden />
           </button>

@@ -150,7 +150,7 @@ function SpawnDetail() {
                 <div className="pl-1 text-text-muted"><ChevronRight className="h-3 w-3 rotate-90" /></div>
               </li>
             ))}
-            <li className="flex items-center gap-2 text-sm rounded-md bg-brand-50 px-2 py-1.5">
+            <li className="flex items-center gap-2 text-sm rounded-md bg-brand-50 dark:bg-surface-muted px-2 py-1.5">
               <span className="font-mono text-xs w-24 shrink-0 text-brand-700">{b.code}</span>
               <span className="truncate font-medium text-text-primary">{b.label}</span>
               <Tag tone="brand" size="sm">{SPAWN_STAGE_LABEL[b.stage]}</Tag>

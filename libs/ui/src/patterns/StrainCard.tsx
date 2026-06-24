@@ -20,7 +20,7 @@ export const StrainCard = React.forwardRef<HTMLDivElement, StrainCardProps>(
   ({ className, name, scientific, optimalTempC, optimalRhPct, cycleDays, yieldKg, ...props }, ref) => (
     <Card ref={ref} interactive className={cn("flex flex-col gap-3", className)} {...props}>
       <div className="flex items-start gap-3">
-        <div className="h-10 w-10 rounded-md bg-brand-50 grid place-items-center text-brand-700 shrink-0" aria-hidden>
+        <div className="h-10 w-10 rounded-md bg-brand-50 dark:bg-surface-muted grid place-items-center text-brand-700 shrink-0" aria-hidden>
           <Dna className="h-5 w-5" />
         </div>
         <div className="flex-1 min-w-0">

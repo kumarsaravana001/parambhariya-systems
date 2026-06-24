@@ -3,13 +3,13 @@ import { cn } from "../utils/cn";
 import { LIFECYCLE_GLYPH, LIFECYCLE_ORDER, type LifecycleStage } from "../icons/lifecycle";
 
 const FILL: Record<LifecycleStage, string> = {
-  CREATED:      "bg-life-created-fg text-white",
-  COLONIZING:   "bg-life-colonizing-fg text-white",
-  PINNING:      "bg-life-pinning-fg text-white",
-  FRUITING:     "bg-life-fruiting-fg text-white",
-  HARVESTED:    "bg-life-harvested-fg text-white",
-  CONTAMINATED: "bg-life-contam-fg text-white",
-  DISPOSED:     "bg-neutral-fg text-white",
+  CREATED:      "bg-life-created-fg text-[var(--text-inverse)]",
+  COLONIZING:   "bg-life-colonizing-fg text-[var(--text-inverse)]",
+  PINNING:      "bg-life-pinning-fg text-[var(--text-inverse)]",
+  FRUITING:     "bg-life-fruiting-fg text-[var(--text-inverse)]",
+  HARVESTED:    "bg-life-harvested-fg text-[var(--text-inverse)]",
+  CONTAMINATED: "bg-life-contam-fg text-[var(--text-inverse)]",
+  DISPOSED:     "bg-neutral-fg text-[var(--text-inverse)]",
 };
 
 export interface LifecycleStepperProps extends React.HTMLAttributes<HTMLOListElement> {

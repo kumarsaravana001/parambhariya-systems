@@ -6,6 +6,8 @@ export interface BottomNavItem {
   href: string;
   icon: React.ReactNode;
   active?: boolean;
+  /** Optional count badge (e.g. open alerts) shown on the icon. */
+  badge?: number;
 }
 
 export interface BottomNavProps extends React.HTMLAttributes<HTMLElement> {
@@ -39,7 +41,17 @@ export const BottomNav = React.forwardRef<HTMLElement, BottomNavProps>(
               )}
               aria-current={item.active ? "page" : undefined}
             >
-              {item.icon}
+              <span className="relative">
+                {item.icon}
+                {item.badge !== undefined && item.badge > 0 && (
+                  <span
+                    aria-hidden
+                    className="absolute -top-1.5 -right-2 h-4 min-w-4 px-1 grid place-items-center rounded-full bg-danger-fg text-white text-[10px] font-mono leading-none"
+                  >
+                    {item.badge}
+                  </span>
+                )}
+              </span>
               <span>{item.label}</span>
             </span>
           );

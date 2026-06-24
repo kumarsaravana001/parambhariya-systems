@@ -183,7 +183,7 @@ export function DatePicker(props: DatePickerProps) {
                       "h-8 w-8 grid place-items-center rounded-md text-sm font-mono",
                       "hover:bg-surface-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
                       selected && "bg-brand-500 text-white hover:bg-brand-600",
-                      middle && "bg-brand-50 text-brand-700 rounded-none",
+                      middle && "bg-brand-50 dark:bg-surface-muted text-brand-700 rounded-none",
                       !selected && !middle && isToday && "ring-1 ring-border-strong"
                     )}
                   >

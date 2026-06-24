@@ -28,6 +28,7 @@ export * from "./primitives/Table";
 export * from "./primitives/Tabs";
 export * from "./primitives/Tag";
 export * from "./primitives/Textarea";
+export * from "./primitives/Toast";
 export * from "./primitives/Tooltip";
 export * from "./primitives/Typography";
 export * from "./primitives/VisuallyHidden";

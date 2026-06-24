@@ -13,7 +13,7 @@ const tagVariants = cva(
         danger:  "bg-danger-bg text-danger-fg",
         info:    "bg-info-bg text-info-fg",
         neutral: "bg-neutral-bg text-neutral-fg",
-        brand:   "bg-brand-50 text-brand-700",
+        brand:   "bg-brand-50 dark:bg-surface-muted text-brand-700",
       },
       size: {
         sm: "h-5 px-2 rounded-sm text-[10px] [&_svg]:h-3 [&_svg]:w-3",
@@ -42,7 +42,7 @@ export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
           type="button"
           onClick={(e) => { e.stopPropagation(); onRemove(); }}
           aria-label="Remove"
-          className="ml-0.5 rounded-sm p-0.5 hover:bg-black/5 focus-visible:ring-2 focus-visible:ring-current"
+          className="ml-1 grid place-items-center rounded-md p-1.5 hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-current"
         >
           <X aria-hidden />
         </button>

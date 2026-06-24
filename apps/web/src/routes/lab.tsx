@@ -22,7 +22,7 @@ function LabLayout() {
   return (
     <div>
       <div className="mb-5 flex items-center gap-3">
-        <div className="h-10 w-10 rounded-md bg-brand-50 grid place-items-center text-brand-700 shrink-0" aria-hidden>
+        <div className="h-10 w-10 rounded-md bg-brand-50 dark:bg-surface-muted grid place-items-center text-brand-700 shrink-0" aria-hidden>
           <FlaskConical className="h-5 w-5" />
         </div>
         <div>

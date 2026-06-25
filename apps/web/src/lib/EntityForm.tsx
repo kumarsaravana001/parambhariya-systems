@@ -15,6 +15,8 @@ export interface FieldSpec {
   placeholder?: string;
   hint?: string;
   options?: { value: string; label: string }[];
+  /** Shown in place of the select when `options` is empty (e.g. "No strains yet — add one first"). */
+  emptyHint?: React.ReactNode;
   /** grid span — 1 (default) or 2 (full row) */
   span?: 1 | 2;
   min?: number;
@@ -84,7 +86,7 @@ export function EntityForm({ open, onOpenChange, title, description, fields, ini
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
-        <form onSubmit={submit} className="flex flex-col min-h-0 flex-1">
+        <form onSubmit={submit} className="flex flex-col min-h-0 flex-1" aria-describedby={error ? "ef-error" : undefined}>
           {/* fields scroll; the dialog header (above) and footer (below) stay pinned */}
           <div ref={bodyRef} className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto pr-1 flex-1 min-h-0">
             {fields.map((f) => {
@@ -95,10 +97,16 @@ export function EntityForm({ open, onOpenChange, title, description, fields, ini
                 ) : f.type === "switch" ? (
                   <div className="h-10 flex items-center"><Switch checked={!!values[f.name]} onCheckedChange={(v) => set(f.name, v)} /></div>
                 ) : f.type === "select" ? (
-                  <Select value={values[f.name] ?? ""} onValueChange={(v) => set(f.name, v)}>
-                    <SelectTrigger id={id}><SelectValue placeholder={f.placeholder ?? "Select…"} /></SelectTrigger>
-                    <SelectContent>{(f.options ?? []).map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
-                  </Select>
+                  (f.options ?? []).length === 0 ? (
+                    <p id={id} className="h-10 flex items-center text-sm text-text-muted">
+                      {f.emptyHint ?? "None available — add one first."}
+                    </p>
+                  ) : (
+                    <Select value={values[f.name] ?? ""} onValueChange={(v) => set(f.name, v)}>
+                      <SelectTrigger id={id}><SelectValue placeholder={f.placeholder ?? "Select…"} /></SelectTrigger>
+                      <SelectContent>{(f.options ?? []).map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+                    </Select>
+                  )
                 ) : (
                   <Input id={id} type={f.type === "number" ? "number" : f.type === "date" ? "date" : "text"}
                     placeholder={f.placeholder} value={values[f.name] ?? ""} min={f.min} max={f.max} step={f.step}
@@ -112,7 +120,7 @@ export function EntityForm({ open, onOpenChange, title, description, fields, ini
               );
             })}
           </div>
-          {error && <p className="text-sm text-danger-fg mt-3" role="alert">{error}</p>}
+          {error && <p id="ef-error" className="text-sm text-danger-fg mt-3" role="alert">{error}</p>}
           <DialogFooter>
             <DialogClose asChild><Button type="button" variant="secondary" size="sm" disabled={busy}>Cancel</Button></DialogClose>
             <Button type="submit" size="sm" loading={busy}>{submitLabel}</Button>

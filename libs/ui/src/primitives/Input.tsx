@@ -16,7 +16,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         "border-border-default",
         "transition-colors duration-[120ms]",
         "hover:border-border-strong",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         "data-[invalid]:border-danger-fg data-[invalid]:focus-visible:ring-danger-fg",
         className

@@ -40,7 +40,11 @@
   /* ── Borders ─────────────────────────────────────────── */
   --border-default: #e3e6e1;
   --border-strong:  #cdd3cb;
-  --border-focus:   var(--brand-500);
+  --border-focus:   var(--brand-700);
+  /* Focus ring must clear 3:1 (WCAG 1.4.11). brand-500 is only ~2.3:1 on white,
+     so light mode uses the darker brand-700; dark mode keeps the brighter
+     brand-500 which contrasts against dark surfaces. */
+  --focus-ring:     var(--brand-700);
 
   /* ── Lifecycle palette ───────────────────────────────── */
   /* Each (-bg, -fg) pair WCAG AA verified at 11px+ (see 01-design-tokens.md table).
@@ -160,6 +164,8 @@
 
   --border-default: #2a322d;
   --border-strong:  #3a443e;
+  --border-focus:   var(--brand-500);
+  --focus-ring:     var(--brand-500);
 
   /* Lifecycle in dark: -bg dims to a saturated dark wash; -fg lightens to
      keep the AA ratio with the new background. -on-fill stays the same

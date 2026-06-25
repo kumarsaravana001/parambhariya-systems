@@ -28,7 +28,7 @@ export const TabsTrigger = React.forwardRef<
       "transition-colors duration-[120ms]",
       "hover:text-text-primary",
       "data-[state=active]:text-brand-700 data-[state=active]:border-brand-500",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 rounded-sm",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 rounded-sm",
       className
     )}
     {...props}

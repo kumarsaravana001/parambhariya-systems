@@ -60,7 +60,7 @@ export const DialogContent = React.forwardRef<
       {children}
       <DialogPrimitive.Close
         aria-label="Close"
-        className="absolute right-3 top-3 grid place-items-center rounded-md p-2 text-text-muted hover:bg-surface-muted hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+        className="absolute right-3 top-3 grid place-items-center rounded-md p-2 text-text-muted hover:bg-surface-muted hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
       >
         <X className="h-4 w-4" aria-hidden />
       </DialogPrimitive.Close>

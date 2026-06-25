@@ -70,7 +70,7 @@ export const LifecycleStepper = React.forwardRef<HTMLOListElement, LifecycleStep
                   "relative h-10 w-10 rounded-full grid place-items-center text-sm font-semibold z-10",
                   "[&_svg]:h-5 [&_svg]:w-5",
                   reached ? FILL[stage] : "bg-surface-muted text-text-muted",
-                  isCurrent && "ring-2 ring-brand-500 ring-offset-2"
+                  isCurrent && "ring-2 ring-[var(--focus-ring)] ring-offset-2"
                 )}
               >
                 <Glyph aria-hidden />

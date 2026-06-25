@@ -16,7 +16,7 @@ export const SelectTrigger = React.forwardRef<
     className={cn(
       "flex h-10 w-full items-center justify-between rounded-md border border-border-default bg-surface-card px-3 py-2 text-base text-text-primary",
       "hover:border-border-strong",
-      "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+      "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2",
       "disabled:opacity-50 disabled:cursor-not-allowed",
       "data-[placeholder]:text-text-muted",
       className

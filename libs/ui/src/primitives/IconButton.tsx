@@ -7,7 +7,7 @@ const iconButtonVariants = cva(
     "inline-flex items-center justify-center rounded-md",
     "transition-colors duration-[120ms]",
     "disabled:pointer-events-none disabled:opacity-50",
-    "focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+    "focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2",
   ].join(" "),
   {
     variants: {

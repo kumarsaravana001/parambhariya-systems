@@ -89,7 +89,7 @@ export function Combobox(props: ComboboxProps) {
           className={cn(
             "flex min-h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-md border bg-surface-card px-3 py-1.5 text-left text-base",
             "border-border-default hover:border-border-strong",
-            "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2",
             disabled && "opacity-50 cursor-not-allowed pointer-events-none",
             className
           )}

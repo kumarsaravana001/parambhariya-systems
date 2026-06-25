@@ -88,7 +88,7 @@ export const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
           className={cn(
             "mt-2 flex items-center gap-2 px-3 h-9 rounded-md text-xs font-medium text-text-muted",
             "hover:bg-surface-muted hover:text-text-primary",
-            "focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+            "focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2",
             isCollapsed && "justify-center px-0"
           )}
         >

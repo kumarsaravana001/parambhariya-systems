@@ -27,7 +27,7 @@ export const Radio = React.forwardRef<
       "border-border-strong hover:border-text-secondary",
       "transition-colors duration-[120ms]",
       "data-[state=checked]:border-brand-500",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2",
       "disabled:opacity-50 disabled:cursor-not-allowed",
       className
     )}

@@ -34,7 +34,7 @@ export function SectionHelp({ id, title = "How to use this section", items, clas
         type="button"
         onClick={toggle}
         aria-expanded={open}
-        className="inline-flex items-center gap-2 h-8 px-2.5 rounded-md text-sm font-medium text-text-secondary hover:bg-surface-muted hover:text-text-primary transition-colors duration-[120ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+        className="inline-flex items-center gap-2 h-8 px-2.5 rounded-md text-sm font-medium text-text-secondary hover:bg-surface-muted hover:text-text-primary transition-colors duration-[120ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2"
       >
         {open ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
         {open ? "Hide guide" : "How to use"}

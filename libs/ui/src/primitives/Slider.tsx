@@ -11,7 +11,7 @@ export interface SliderProps
 export const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
   SliderProps
->(({ className, showBubble, formatValue, value, defaultValue, ...props }, ref) => {
+>(({ className, showBubble, formatValue, value, defaultValue, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledby, ...props }, ref) => {
   const vals = (value ?? defaultValue ?? [0]) as number[];
   return (
     <SliderPrimitive.Root
@@ -27,9 +27,12 @@ export const Slider = React.forwardRef<
       {vals.map((v, i) => (
         <SliderPrimitive.Thumb
           key={i}
+          // the Thumb is the role="slider" element — the accessible name belongs here
+          aria-label={ariaLabel}
+          aria-labelledby={ariaLabelledby}
           className={cn(
             "relative block h-5 w-5 rounded-full bg-white border-2 border-brand-500 shadow-sm",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2",
             "disabled:opacity-50"
           )}
         >

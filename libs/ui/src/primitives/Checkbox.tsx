@@ -27,7 +27,7 @@ export const Checkbox = React.forwardRef<
       "hover:border-text-secondary",
       "data-[state=checked]:bg-brand-500 data-[state=checked]:border-brand-500",
       "data-[state=indeterminate]:bg-brand-500 data-[state=indeterminate]:border-brand-500",
-      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2",
       "disabled:opacity-50 disabled:cursor-not-allowed",
       "data-[invalid]:border-danger-fg",
       SIZE[size],

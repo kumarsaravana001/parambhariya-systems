@@ -78,7 +78,7 @@ export function Toaster() {
               type="button"
               aria-label="Dismiss"
               onClick={() => dismiss(t.id)}
-              className="shrink-0 grid place-items-center rounded-md p-1.5 -m-1 text-text-muted hover:bg-surface-muted hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="shrink-0 grid place-items-center rounded-md p-1.5 -m-1 text-text-muted hover:bg-surface-muted hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
             >
               <X className="h-4 w-4" aria-hidden />
             </button>

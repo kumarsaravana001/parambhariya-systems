@@ -17,7 +17,7 @@ export const TenantCard = React.forwardRef<HTMLDivElement, TenantCardProps>(
       interactive
       className={cn(
         "flex items-center gap-3",
-        selected && "border-brand-500 ring-1 ring-brand-500",
+        selected && "border-brand-500 ring-1 ring-[var(--focus-ring)]",
         className
       )}
       {...props}

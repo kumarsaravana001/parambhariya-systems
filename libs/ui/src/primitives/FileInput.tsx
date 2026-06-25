@@ -63,7 +63,7 @@ export function FileInput({
             "inline-flex items-center gap-2 h-10 px-4 rounded-md text-base font-medium",
             "bg-surface-card border border-border-strong text-text-primary",
             "hover:bg-surface-muted transition-colors duration-[120ms]",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2",
             "disabled:opacity-50 disabled:cursor-not-allowed self-start"
           )}
         >
@@ -81,7 +81,7 @@ export function FileInput({
           className={cn(
             "flex flex-col items-center justify-center gap-2 w-full rounded-lg px-6 py-8 text-center",
             "border-2 border-dashed transition-colors duration-[120ms]",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             dragover
               ? "border-brand-500 bg-brand-50 dark:bg-surface-muted"
@@ -115,7 +115,7 @@ export function FileInput({
                   type="button"
                   onClick={() => onRemove(i)}
                   aria-label={`Remove ${f.name}`}
-                  className="rounded-sm p-1 text-text-muted hover:bg-surface-muted hover:text-text-primary focus-visible:ring-2 focus-visible:ring-brand-500"
+                  className="rounded-sm p-1 text-text-muted hover:bg-surface-muted hover:text-text-primary focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
                 >
                   <X className="h-4 w-4" aria-hidden />
                 </button>

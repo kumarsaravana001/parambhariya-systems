@@ -134,7 +134,7 @@ function SettingsScreen() {
               ].map((c) => (
                 <div key={c.k} className="flex items-center gap-4">
                   <div className="w-28 text-sm text-text-secondary">{c.label}</div>
-                  <Slider className="flex-1" value={[settings.climate[c.k]]} min={c.min} max={c.max} step={c.step}
+                  <Slider className="flex-1" value={[settings.climate[c.k]]} min={c.min} max={c.max} step={c.step} aria-label={`Default ${c.label.toLowerCase()} (${c.unit})`}
                     onValueChange={(v) => update("climate", { [c.k]: v[0] } as any)} showBubble formatValue={(v) => `${v} ${c.unit}`} />
                   <div className="w-20 text-right font-mono text-sm">{settings.climate[c.k]} {c.unit}</div>
                 </div>
@@ -153,7 +153,7 @@ function SettingsScreen() {
             ]} />
             <div className="flex items-center gap-4">
               <div className="w-40 text-sm text-text-secondary">Sample rate</div>
-              <Slider className="flex-1 max-w-xs" value={sampleRate} min={5} max={300} step={5} onValueChange={setSampleRate} showBubble formatValue={(v) => `${v} s`} />
+              <Slider className="flex-1 max-w-xs" value={sampleRate} min={5} max={300} step={5} aria-label="Sensor sample rate (seconds)" onValueChange={setSampleRate} showBubble formatValue={(v) => `${v} s`} />
             </div>
             {driverMode === "local" && (
               <Alert tone="info">Demo mode stores data in this browser. Set <code className="font-mono">VITE_API_URL</code> to use the real backend with shared, persistent data.</Alert>

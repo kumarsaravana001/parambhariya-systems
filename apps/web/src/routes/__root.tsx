@@ -71,8 +71,8 @@ function Shell() {
             }
             right={
               <>
-                <Link to="/alerts" aria-label="Alerts">
-                  <IconButton aria-label="Alerts" variant="ghost" size="sm" className="relative">
+                <Link to="/alerts" aria-label={openAlerts > 0 ? `Alerts, ${openAlerts} open` : "Alerts"}>
+                  <IconButton aria-label={openAlerts > 0 ? `Alerts, ${openAlerts} open` : "Alerts"} variant="ghost" size="sm" className="relative">
                     <Bell />
                     {openAlerts > 0 && (
                       <span

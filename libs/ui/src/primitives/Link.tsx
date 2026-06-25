@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../utils/cn";
 
 const linkVariants = cva(
-  "inline-flex items-center gap-1 underline-offset-2 transition-colors duration-[120ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 rounded-sm",
+  "inline-flex items-center gap-1 underline-offset-2 transition-colors duration-[120ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 rounded-sm",
   {
     variants: {
       variant: {

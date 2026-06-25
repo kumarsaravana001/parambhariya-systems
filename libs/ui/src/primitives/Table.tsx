@@ -34,9 +34,10 @@ TR.displayName = "TR";
 export const TH = React.forwardRef<
   HTMLTableCellElement,
   React.ThHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
+>(({ className, scope = "col", ...props }, ref) => (
   <th
     ref={ref}
+    scope={scope}
     className={cn(
       "px-3 py-2 text-xs font-semibold uppercase tracking-[0.06em] text-text-muted whitespace-nowrap",
       className

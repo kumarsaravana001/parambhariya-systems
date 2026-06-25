@@ -25,7 +25,7 @@ function SetpointRow({ label, unit, value, min, max, step, onCommit }: {
   return (
     <div className="flex items-center gap-4">
       <div className="w-28 shrink-0 text-sm text-text-secondary">{label}</div>
-      <Slider className="flex-1" value={local} min={min} max={max} step={step}
+      <Slider className="flex-1" value={local} min={min} max={max} step={step} aria-label={`${label} setpoint (${unit})`}
         onValueChange={setLocal} onValueCommit={(v) => onCommit(v[0]!)} showBubble formatValue={(v) => `${v} ${unit}`} />
       <div className="w-20 text-right font-mono text-sm text-text-primary">{local[0]} {unit}</div>
     </div>

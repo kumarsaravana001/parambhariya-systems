@@ -16,7 +16,7 @@ export const FilterChip = React.forwardRef<HTMLButtonElement, FilterChipProps>(
       className={cn(
         "inline-flex items-center gap-1.5 h-8 px-3 rounded-full text-sm font-medium border whitespace-nowrap",
         "transition-colors duration-[120ms]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2",
         active
           ? "bg-brand-500 text-white border-brand-500 hover:bg-brand-600"
           : "bg-surface-card text-text-secondary border-border-default hover:bg-surface-muted hover:text-text-primary",

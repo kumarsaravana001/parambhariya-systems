@@ -37,8 +37,21 @@ const TONE_SPARK = {
  */
 export const BigReading = React.forwardRef<HTMLDivElement, BigReadingProps>(
   ({ className, label, value, unit, icon, range, freshness, tone = "default", trend, ...props }, ref) => (
-    <Card ref={ref} className={cn("flex flex-col gap-3", className)} {...props}>
-      <div className="flex items-center justify-between gap-2 text-text-muted">
+    // role=img + a composite aria-label so screen readers read the whole tile as
+    // one sentence ("Temperature 24.1 °C, optimal 24 °C ± 2, updated 3s ago")
+    // instead of disjoint fragments; the decorative sparkline is skipped.
+    <Card
+      ref={ref}
+      role="img"
+      aria-label={[
+        `${label}: ${value}${unit ? ` ${unit}` : ""}`,
+        range ? `optimal ${range}` : "",
+        freshness && freshness !== "—" ? `updated ${freshness}` : "",
+      ].filter(Boolean).join(", ")}
+      className={cn("flex flex-col gap-3", className)}
+      {...props}
+    >
+      <div className="flex items-center justify-between gap-2 text-text-muted" aria-hidden="true">
         <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.06em]">
           {icon && <span className="[&_svg]:h-4 [&_svg]:w-4">{icon}</span>}
           {label}

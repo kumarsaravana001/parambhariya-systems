@@ -119,7 +119,7 @@ export function DatePicker(props: DatePickerProps) {
           className={cn(
             "flex h-10 w-full items-center gap-2 rounded-md border bg-surface-card px-3 text-left text-base",
             "border-border-default hover:border-border-strong",
-            "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             className
           )}
@@ -181,7 +181,7 @@ export function DatePicker(props: DatePickerProps) {
                     aria-pressed={selected}
                     className={cn(
                       "h-8 w-8 grid place-items-center rounded-md text-sm font-mono",
-                      "hover:bg-surface-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500",
+                      "hover:bg-surface-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]",
                       selected && "bg-brand-500 text-white hover:bg-brand-600",
                       middle && "bg-brand-50 dark:bg-surface-muted text-brand-700 rounded-none",
                       !selected && !middle && isToday && "ring-1 ring-border-strong"

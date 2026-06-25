@@ -24,7 +24,7 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
             "h-10 w-full rounded-md border bg-surface-card pl-9 pr-9 text-base text-text-primary",
             "placeholder:text-text-muted border-border-default hover:border-border-strong",
             "transition-colors duration-[120ms]",
-            "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             "[&::-webkit-search-cancel-button]:appearance-none"
           )}
@@ -35,7 +35,7 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
             type="button"
             onClick={onClear}
             aria-label="Clear search"
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 grid place-items-center rounded-md p-2 text-text-muted hover:bg-surface-muted hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="absolute right-1.5 top-1/2 -translate-y-1/2 grid place-items-center rounded-md p-2 text-text-muted hover:bg-surface-muted hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
           >
             <X className="h-4 w-4" aria-hidden />
           </button>

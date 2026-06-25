@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from "./routes/__root";
 import { Route as StrainsRouteImport } from "./routes/strains";
 import { Route as SettingsRouteImport } from "./routes/settings";
 import { Route as ReportsRouteImport } from "./routes/reports";
+import { Route as PlannerRouteImport } from "./routes/planner";
 import { Route as LoginRouteImport } from "./routes/login";
 import { Route as LabRouteImport } from "./routes/lab";
 import { Route as FlowsRouteImport } from "./routes/flows";
@@ -48,6 +49,11 @@ const SettingsRoute = SettingsRouteImport.update({
 const ReportsRoute = ReportsRouteImport.update({
   id: "/reports",
   path: "/reports",
+  getParentRoute: () => rootRouteImport,
+} as any);
+const PlannerRoute = PlannerRouteImport.update({
+  id: "/planner",
+  path: "/planner",
   getParentRoute: () => rootRouteImport,
 } as any);
 const LoginRoute = LoginRouteImport.update({
@@ -169,6 +175,7 @@ export interface FileRoutesByFullPath {
   "/flows": typeof FlowsRoute;
   "/lab": typeof LabRouteWithChildren;
   "/login": typeof LoginRoute;
+  "/planner": typeof PlannerRoute;
   "/reports": typeof ReportsRoute;
   "/settings": typeof SettingsRoute;
   "/strains": typeof StrainsRoute;
@@ -195,6 +202,7 @@ export interface FileRoutesByTo {
   "/dashboard": typeof DashboardRoute;
   "/flows": typeof FlowsRoute;
   "/login": typeof LoginRoute;
+  "/planner": typeof PlannerRoute;
   "/reports": typeof ReportsRoute;
   "/settings": typeof SettingsRoute;
   "/strains": typeof StrainsRoute;
@@ -223,6 +231,7 @@ export interface FileRoutesById {
   "/flows": typeof FlowsRoute;
   "/lab": typeof LabRouteWithChildren;
   "/login": typeof LoginRoute;
+  "/planner": typeof PlannerRoute;
   "/reports": typeof ReportsRoute;
   "/settings": typeof SettingsRoute;
   "/strains": typeof StrainsRoute;
@@ -252,6 +261,7 @@ export interface FileRouteTypes {
     | "/flows"
     | "/lab"
     | "/login"
+    | "/planner"
     | "/reports"
     | "/settings"
     | "/strains"
@@ -278,6 +288,7 @@ export interface FileRouteTypes {
     | "/dashboard"
     | "/flows"
     | "/login"
+    | "/planner"
     | "/reports"
     | "/settings"
     | "/strains"
@@ -305,6 +316,7 @@ export interface FileRouteTypes {
     | "/flows"
     | "/lab"
     | "/login"
+    | "/planner"
     | "/reports"
     | "/settings"
     | "/strains"
@@ -333,6 +345,7 @@ export interface RootRouteChildren {
   FlowsRoute: typeof FlowsRoute;
   LabRoute: typeof LabRouteWithChildren;
   LoginRoute: typeof LoginRoute;
+  PlannerRoute: typeof PlannerRoute;
   ReportsRoute: typeof ReportsRoute;
   SettingsRoute: typeof SettingsRoute;
   StrainsRoute: typeof StrainsRoute;
@@ -366,6 +379,13 @@ declare module "@tanstack/react-router" {
       path: "/reports";
       fullPath: "/reports";
       preLoaderRoute: typeof ReportsRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    "/planner": {
+      id: "/planner";
+      path: "/planner";
+      fullPath: "/planner";
+      preLoaderRoute: typeof PlannerRouteImport;
       parentRoute: typeof rootRouteImport;
     };
     "/login": {
@@ -557,6 +577,7 @@ const rootRouteChildren: RootRouteChildren = {
   FlowsRoute: FlowsRoute,
   LabRoute: LabRouteWithChildren,
   LoginRoute: LoginRoute,
+  PlannerRoute: PlannerRoute,
   ReportsRoute: ReportsRoute,
   SettingsRoute: SettingsRoute,
   StrainsRoute: StrainsRoute,

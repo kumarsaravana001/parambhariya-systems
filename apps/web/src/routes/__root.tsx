@@ -6,7 +6,7 @@ import {
 } from "@parambhariya/ui";
 import {
   Sprout, TriangleAlert, ChartBar, Dna, Settings, LogOut, Bell,
-  LayoutDashboard, Workflow, FlaskConical, TestTubes, Menu,
+  LayoutDashboard, Workflow, FlaskConical, TestTubes, Menu, CalendarRange,
 } from "lucide-react";
 import { useAlerts, useLiveReadings } from "../lib/queries";
 
@@ -15,6 +15,7 @@ const NAV = [
   { label: "Farms",      href: "/farms",      icon: <Sprout /> },
   { label: "Strains",    href: "/strains",    icon: <Dna /> },
   { label: "Spawn",      href: "/spawn",      icon: <TestTubes /> },
+  { label: "Planner",    href: "/planner",    icon: <CalendarRange /> },
   { label: "Alerts",     href: "/alerts",     icon: <TriangleAlert /> },
   { label: "Reports",    href: "/reports",    icon: <ChartBar /> },
   { label: "Flows",      href: "/flows",      icon: <Workflow /> },
@@ -23,7 +24,7 @@ const NAV = [
 ];
 
 // Routes that live behind the mobile "More" sheet (everything not on the bottom bar).
-const MORE_HREFS = ["/strains", "/reports", "/flows", "/lab", "/settings"];
+const MORE_HREFS = ["/planner", "/strains", "/reports", "/flows", "/lab", "/settings"];
 
 function Shell() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
